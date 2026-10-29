@@ -68,6 +68,7 @@ export function orderUpdatedEvent(order: OrderRecord): OrderUpdatedEvent {
       userId: order.userId,
       status: order.status,
       transactionHash: order.transactionHash,
+      explorerUrl: order.explorerUrl,
       declineReason: order.declineReason,
     },
   }

@@ -35,6 +35,7 @@ export type OrderUpdatedEvent = RealtimeEnvelope<
     userId: string
     status: OrderStatus
     transactionHash: string | null
+    explorerUrl: string | null
     declineReason: string | null
   }
 >

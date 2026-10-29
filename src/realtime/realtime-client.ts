@@ -129,6 +129,7 @@ export function applyOrderEvent(queryClient: QueryClient, userId: string, event:
       status: event.data.status,
       version: event.version,
       transactionHash: event.data.transactionHash,
+      explorerUrl: event.data.explorerUrl,
       declineReason: event.data.declineReason,
     }
   })
