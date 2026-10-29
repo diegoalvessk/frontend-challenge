@@ -162,7 +162,7 @@ export function createNftFixtures(): NftDetail[] {
     const creator = CREATORS[index % CREATORS.length]
     const editions = buildEditions(price, rand, index)
     const reviews = buildReviews(rand, id)
-    const rarity = figma?.rarity ?? (rand() > 0.85 ? 'raro' : rand() > 0.97 ? 'lendario' : 'comum')
+    const rarity = figma ? (figma.rarity ?? 'comum') : rand() > 0.85 ? 'raro' : rand() > 0.97 ? 'lendario' : 'comum'
     const networkLabel = network === 'ethereum' ? 'Ethereum' : network === 'polygon' ? 'Polygon' : 'Solana'
 
     return {

@@ -35,13 +35,17 @@ export const sessionStore = {
 
   subscribe(listener: () => void) {
     listeners.add(listener)
-    return () => listeners.delete(listener)
+    return () => {
+      listeners.delete(listener)
+    }
   },
 
   /** Notificado sempre que uma sessão termina (limpeza de cache e sockets). */
   onEnd(listener: (reason: SessionEndReason, previous: Session) => void) {
     endListeners.add(listener)
-    return () => endListeners.delete(listener)
+    return () => {
+      endListeners.delete(listener)
+    }
   },
 
   start(session: Session) {

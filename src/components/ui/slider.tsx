@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Slider as SliderPrimitive } from "radix-ui"
@@ -9,8 +8,12 @@ function Slider({
   value,
   min = 0,
   max = 100,
+  thumbLabels,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root>) {
+}: React.ComponentProps<typeof SliderPrimitive.Root> & {
+  /** Rótulo acessível de cada alça (ex.: "Preço mínimo", "Preço máximo"). */
+  thumbLabels?: string[]
+}) {
   const _values = React.useMemo(
     () =>
       Array.isArray(value)
@@ -29,25 +32,23 @@ function Slider({
       min={min}
       max={max}
       className={cn(
-        "relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col",
+        "relative flex w-full touch-none items-center select-none data-disabled:opacity-50",
         className
       )}
       {...props}
     >
       <SliderPrimitive.Track
         data-slot="slider-track"
-        className="relative grow overflow-hidden rounded-full bg-muted data-horizontal:h-1 data-horizontal:w-full data-vertical:h-full data-vertical:w-1"
+        className="relative h-[3px] grow overflow-hidden rounded-full bg-primary/40"
       >
-        <SliderPrimitive.Range
-          data-slot="slider-range"
-          className="absolute bg-primary select-none data-horizontal:h-full data-vertical:w-full"
-        />
+        <SliderPrimitive.Range data-slot="slider-range" className="absolute h-full bg-primary select-none" />
       </SliderPrimitive.Track>
       {Array.from({ length: _values.length }, (_, index) => (
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={index}
-          className="relative block size-3 shrink-0 rounded-full border border-ring bg-white ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
+          aria-label={thumbLabels?.[index]}
+          className="relative block size-3.5 shrink-0 rounded-full border-2 border-ink-700 bg-primary transition-[box-shadow] select-none after:absolute after:-inset-3 hover:ring-4 hover:ring-ring/40 focus-visible:ring-4 focus-visible:ring-ring/60 focus-visible:outline-hidden"
         />
       ))}
     </SliderPrimitive.Root>

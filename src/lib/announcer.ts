@@ -19,7 +19,9 @@ export function useAnnouncement() {
   return useSyncExternalStore(
     (l) => {
       listeners.add(l)
-      return () => listeners.delete(l)
+      return () => {
+        listeners.delete(l)
+      }
     },
     () => message,
   )

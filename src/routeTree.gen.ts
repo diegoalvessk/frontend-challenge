@@ -10,33 +10,180 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as CarrinhoRouteImport } from './routes/carrinho'
+import { Route as EntrarRouteImport } from './routes/entrar'
+import { Route as PagamentoRouteImport } from './routes/pagamento'
+import { Route as EmBreveSecaoRouteImport } from './routes/em-breve/$secao'
+import { Route as NftNftIdRouteImport } from './routes/nft/$nftId'
+import { Route as PedidosOrderIdRouteImport } from './routes/pedidos/$orderId'
+import { Route as PerfilIndexRouteImport } from './routes/perfil/index'
+import { Route as PerfilCarteirasRouteImport } from './routes/perfil/carteiras'
+import { Route as PerfilFavoritosRouteImport } from './routes/perfil/favoritos'
+import { Route as ExploradorTxHashRouteImport } from './routes/explorador/tx/$hash'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CadastroRoute = CadastroRouteImport.update({
+  id: '/cadastro',
+  path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarrinhoRoute = CarrinhoRouteImport.update({
+  id: '/carrinho',
+  path: '/carrinho',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EntrarRoute = EntrarRouteImport.update({
+  id: '/entrar',
+  path: '/entrar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagamentoRoute = PagamentoRouteImport.update({
+  id: '/pagamento',
+  path: '/pagamento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmBreveSecaoRoute = EmBreveSecaoRouteImport.update({
+  id: '/em-breve/$secao',
+  path: '/em-breve/$secao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NftNftIdRoute = NftNftIdRouteImport.update({
+  id: '/nft/$nftId',
+  path: '/nft/$nftId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PedidosOrderIdRoute = PedidosOrderIdRouteImport.update({
+  id: '/pedidos/$orderId',
+  path: '/pedidos/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilIndexRoute = PerfilIndexRouteImport.update({
+  id: '/perfil/',
+  path: '/perfil/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilCarteirasRoute = PerfilCarteirasRouteImport.update({
+  id: '/perfil/carteiras',
+  path: '/perfil/carteiras',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilFavoritosRoute = PerfilFavoritosRouteImport.update({
+  id: '/perfil/favoritos',
+  path: '/perfil/favoritos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploradorTxHashRoute = ExploradorTxHashRouteImport.update({
+  id: '/explorador/tx/$hash',
+  path: '/explorador/tx/$hash',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/entrar': typeof EntrarRoute
+  '/pagamento': typeof PagamentoRoute
+  '/em-breve/$secao': typeof EmBreveSecaoRoute
+  '/nft/$nftId': typeof NftNftIdRoute
+  '/pedidos/$orderId': typeof PedidosOrderIdRoute
+  '/perfil/carteiras': typeof PerfilCarteirasRoute
+  '/perfil/favoritos': typeof PerfilFavoritosRoute
+  '/perfil/': typeof PerfilIndexRoute
+  '/explorador/tx/$hash': typeof ExploradorTxHashRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/entrar': typeof EntrarRoute
+  '/pagamento': typeof PagamentoRoute
+  '/em-breve/$secao': typeof EmBreveSecaoRoute
+  '/nft/$nftId': typeof NftNftIdRoute
+  '/pedidos/$orderId': typeof PedidosOrderIdRoute
+  '/perfil/carteiras': typeof PerfilCarteirasRoute
+  '/perfil/favoritos': typeof PerfilFavoritosRoute
+  '/perfil': typeof PerfilIndexRoute
+  '/explorador/tx/$hash': typeof ExploradorTxHashRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/entrar': typeof EntrarRoute
+  '/pagamento': typeof PagamentoRoute
+  '/em-breve/$secao': typeof EmBreveSecaoRoute
+  '/nft/$nftId': typeof NftNftIdRoute
+  '/pedidos/$orderId': typeof PedidosOrderIdRoute
+  '/perfil/carteiras': typeof PerfilCarteirasRoute
+  '/perfil/favoritos': typeof PerfilFavoritosRoute
+  '/perfil/': typeof PerfilIndexRoute
+  '/explorador/tx/$hash': typeof ExploradorTxHashRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/cadastro'
+    | '/carrinho'
+    | '/entrar'
+    | '/pagamento'
+    | '/em-breve/$secao'
+    | '/nft/$nftId'
+    | '/pedidos/$orderId'
+    | '/perfil/carteiras'
+    | '/perfil/favoritos'
+    | '/perfil/'
+    | '/explorador/tx/$hash'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/cadastro'
+    | '/carrinho'
+    | '/entrar'
+    | '/pagamento'
+    | '/em-breve/$secao'
+    | '/nft/$nftId'
+    | '/pedidos/$orderId'
+    | '/perfil/carteiras'
+    | '/perfil/favoritos'
+    | '/perfil'
+    | '/explorador/tx/$hash'
+  id:
+    | '__root__'
+    | '/'
+    | '/cadastro'
+    | '/carrinho'
+    | '/entrar'
+    | '/pagamento'
+    | '/em-breve/$secao'
+    | '/nft/$nftId'
+    | '/pedidos/$orderId'
+    | '/perfil/carteiras'
+    | '/perfil/favoritos'
+    | '/perfil/'
+    | '/explorador/tx/$hash'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CadastroRoute: typeof CadastroRoute
+  CarrinhoRoute: typeof CarrinhoRoute
+  EntrarRoute: typeof EntrarRoute
+  PagamentoRoute: typeof PagamentoRoute
+  EmBreveSecaoRoute: typeof EmBreveSecaoRoute
+  NftNftIdRoute: typeof NftNftIdRoute
+  PedidosOrderIdRoute: typeof PedidosOrderIdRoute
+  PerfilCarteirasRoute: typeof PerfilCarteirasRoute
+  PerfilFavoritosRoute: typeof PerfilFavoritosRoute
+  PerfilIndexRoute: typeof PerfilIndexRoute
+  ExploradorTxHashRoute: typeof ExploradorTxHashRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +195,99 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cadastro': {
+      id: '/cadastro'
+      path: '/cadastro'
+      fullPath: '/cadastro'
+      preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carrinho': {
+      id: '/carrinho'
+      path: '/carrinho'
+      fullPath: '/carrinho'
+      preLoaderRoute: typeof CarrinhoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/entrar': {
+      id: '/entrar'
+      path: '/entrar'
+      fullPath: '/entrar'
+      preLoaderRoute: typeof EntrarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pagamento': {
+      id: '/pagamento'
+      path: '/pagamento'
+      fullPath: '/pagamento'
+      preLoaderRoute: typeof PagamentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/em-breve/$secao': {
+      id: '/em-breve/$secao'
+      path: '/em-breve/$secao'
+      fullPath: '/em-breve/$secao'
+      preLoaderRoute: typeof EmBreveSecaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nft/$nftId': {
+      id: '/nft/$nftId'
+      path: '/nft/$nftId'
+      fullPath: '/nft/$nftId'
+      preLoaderRoute: typeof NftNftIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pedidos/$orderId': {
+      id: '/pedidos/$orderId'
+      path: '/pedidos/$orderId'
+      fullPath: '/pedidos/$orderId'
+      preLoaderRoute: typeof PedidosOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil/': {
+      id: '/perfil/'
+      path: '/perfil'
+      fullPath: '/perfil/'
+      preLoaderRoute: typeof PerfilIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil/carteiras': {
+      id: '/perfil/carteiras'
+      path: '/perfil/carteiras'
+      fullPath: '/perfil/carteiras'
+      preLoaderRoute: typeof PerfilCarteirasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil/favoritos': {
+      id: '/perfil/favoritos'
+      path: '/perfil/favoritos'
+      fullPath: '/perfil/favoritos'
+      preLoaderRoute: typeof PerfilFavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explorador/tx/$hash': {
+      id: '/explorador/tx/$hash'
+      path: '/explorador/tx/$hash'
+      fullPath: '/explorador/tx/$hash'
+      preLoaderRoute: typeof ExploradorTxHashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CadastroRoute: CadastroRoute,
+  CarrinhoRoute: CarrinhoRoute,
+  EntrarRoute: EntrarRoute,
+  PagamentoRoute: PagamentoRoute,
+  EmBreveSecaoRoute: EmBreveSecaoRoute,
+  NftNftIdRoute: NftNftIdRoute,
+  PedidosOrderIdRoute: PedidosOrderIdRoute,
+  PerfilCarteirasRoute: PerfilCarteirasRoute,
+  PerfilFavoritosRoute: PerfilFavoritosRoute,
+  PerfilIndexRoute: PerfilIndexRoute,
+  ExploradorTxHashRoute: ExploradorTxHashRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
