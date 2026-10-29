@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FlaskConical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { useCart } from '@/features/cart/use-cart'
+import { apiReady } from '@/lib/api-ready'
 
 /**
  * Painel de demonstração da API simulada. Ele só conversa com a camada de
@@ -10,9 +11,16 @@ import { useCart } from '@/features/cart/use-cart'
  * respostas REST e pelos eventos Socket.IO, nunca por atalhos na UI.
  */
 export function MockPanel() {
-  const control = typeof window !== 'undefined' ? window.__KURIO_MOCK__ : undefined
+  // Os mocks carregam em paralelo à interface: o painel aparece quando ficam prontos.
+  const [control, setControl] = useState(() => window.__KURIO_MOCK__)
   const [open, setOpen] = useState(false)
   const [scenario, setScenario] = useState(() => control?.getScenario() ?? 'default')
+  useEffect(() => {
+    void apiReady.then(() => {
+      setControl(window.__KURIO_MOCK__)
+      setScenario(window.__KURIO_MOCK__?.getScenario() ?? 'default')
+    })
+  }, [])
   const [feedback, setFeedback] = useState<string | null>(null)
   const { data: cart } = useCart()
 

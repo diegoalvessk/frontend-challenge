@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Kurio — Apresentação do projeto</title>
+<style>
+  @font-face {
+    font-family: 'Roboto Mono';
+    src: url('../../public/fonts/roboto-mono-latin.woff2') format('woff2');
+    font-weight: 100 700;
+  }
+  :root {
+    --ink: #140d0a; --ink2: #241612; --cream: #f5f1eb; --sand: #cfb28c; --khaki: #8a6f45;
+    --copper: #d28a4c; --amber: #e89b55; --line: #e4d8c8; --ok: #2f7d45; --warn: #a3542b;
+  }
+  * { box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  body { margin: 0; font: 10.5pt/1.55 'Segoe UI', system-ui, sans-serif; color: var(--ink); background: #fff; }
+  .page { width: 210mm; min-height: 297mm; padding: 18mm 18mm 16mm; page-break-after: always; position: relative; }
+  .page:last-child { page-break-after: auto; }
+  h1, h2, h3, .mono { font-family: 'Roboto Mono', ui-monospace, monospace; }
+  h2 { font-size: 17pt; margin: 0 0 4mm; padding-bottom: 2mm; border-bottom: 2px solid var(--copper); }
+  h3 { font-size: 11.5pt; margin: 6mm 0 2mm; color: var(--ink2); }
+  p { margin: 0 0 2.5mm; }
+  ul { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1.2mm; }
+  code { font-family: 'Roboto Mono', monospace; font-size: 9pt; background: #f3ece2; padding: 0 1.2mm; border-radius: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.2pt; margin: 2mm 0 4mm; }
+  th, td { text-align: left; padding: 1.6mm 2mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--ink2); color: var(--cream); font-weight: 600; }
+  td.ok { color: var(--ok); font-weight: 700; } td.warn { color: var(--warn); font-weight: 700; }
+  .footer { position: absolute; bottom: 8mm; left: 18mm; right: 18mm; font-size: 8pt; color: var(--khaki); display: flex; justify-content: space-between; }
+  .callout { background: #fbf6ef; border-left: 4px solid var(--copper); padding: 3mm 4mm; margin: 3mm 0 4mm; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; margin: 5mm 0; }
+  .kpi { border: 1px solid var(--line); border-radius: 3mm; padding: 3.5mm; }
+  .kpi b { display: block; font: 700 18pt 'Roboto Mono', monospace; color: var(--copper); }
+  .kpi span { font-size: 8.5pt; color: #5b4a3b; }
+  .cover { background: var(--ink); color: var(--cream); display: flex; flex-direction: column; justify-content: space-between; }
+  .cover h1 { font-size: 34pt; letter-spacing: 0.08em; margin: 0; }
+  .cover .tag { color: var(--amber); font: 600 11pt 'Roboto Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; }
+  .cover p { color: var(--sand); }
+  .cover .meta { border-top: 1px solid rgba(207,178,140,0.3); padding-top: 6mm; font-size: 10pt; }
+  .cover .meta b { color: var(--cream); }
+  .shots { display: grid; grid-template-columns: 3fr 1fr; gap: 5mm; align-items: start; }
+  .shots img { width: 100%; border: 1px solid var(--line); border-radius: 2mm; display: block; }
+  .shot-crop { height: 105mm; overflow: hidden; border: 1px solid var(--line); border-radius: 2mm; }
+  .shot-crop img { border: 0; border-radius: 0; }
+  .caption { font-size: 8.5pt; color: var(--khaki); margin-top: 1.5mm; }
+  .diagram { font: 8.6pt/1.45 'Roboto Mono', monospace; background: var(--ink); color: var(--cream); padding: 4mm 5mm; border-radius: 2mm; white-space: pre; }
+  .steps li { margin-bottom: 2mm; }
+  .steps b { color: var(--ink2); }
+  .qa dt { font-weight: 700; margin-top: 3mm; }
+  .qa dd { margin: 1mm 0 0 0; }
+  .pill { display: inline-block; border: 1px solid var(--copper); color: var(--warn); border-radius: 99px; padding: 0 2mm; font-size: 8pt; }
+</style>
+</head>
+<body>
+
+<!-- 1. Capa -->
+<section class="page cover">
+  <div>
+    <p class="tag">Desafio Frontend · Jungle Gaming</p>
+    <h1>KURIO</h1>
+    <p style="font-size:15pt;color:var(--cream);margin-top:4mm">Marketplace de NFTs</p>
+    <p style="max-width:140mm;margin-top:8mm">Apresentação do projeto: o que foi entregue, como foi construído, como cada requisito foi atendido e um roteiro para demonstrar a aplicação.</p>
+  </div>
+  <div class="meta">
+    <p><b>Aplicação publicada:</b> {{DEPLOY_URL}}</p>
+    <p><b>Repositório:</b> github.com/diegoalvessk/frontend-challenge</p>
+    <p><b>Documentação técnica:</b> README.md e ARCHITECTURE.md no repositório</p>
+    <p><b>Stack:</b> React 19 · TypeScript · TanStack Router/Query · Axios · Socket.IO · Tailwind · shadcn/ui · MSW · Playwright · Lighthouse</p>
+  </div>
+</section>
+
+<!-- 2. Resumo -->
+<section class="page">
+  <h2>1. Resumo do que foi entregue</h2>
+  <p>A Kurio é um marketplace de NFTs com os fluxos completos de <b>descoberta</b> (catálogo com busca, filtros, ordenação e paginação), <b>compra</b> (detalhe, carrinho, pagamento com carteira e recibo) e <b>conta do colecionador</b> (cadastro, login, perfil, avatar, senha, carteiras e favoritos), em desktop e mobile, fiel ao Figma.</p>
+  <p>Não existe backend real: toda a API REST e o servidor de tempo real são <b>simulados no navegador com MSW</b>. Por isso a aplicação publicada funciona de ponta a ponta, inclusive os eventos Socket.IO, e qualquer cenário de falha pode ser reproduzido sob demanda.</p>
+
+  <div class="kpis">
+    <div class="kpi"><b>9</b><span>telas do enunciado, desktop e mobile</span></div>
+    <div class="kpi"><b>{{TEST_COUNT}}</b><span>testes E2E Playwright (desktop + mobile)</span></div>
+    <div class="kpi"><b>14</b><span>cenários determinísticos de rede e negócio</span></div>
+    <div class="kpi"><b>8</b><span>baselines de regressão visual versionadas</span></div>
+  </div>
+
+  <h3>Telas implementadas</h3>
+  <table>
+    <tr><th>Tela</th><th>Destaques</th></tr>
+    <tr><td>Início</td><td>Banner, NFT em destaque (API), catálogo com busca, filtros combináveis (coleção, preço, rede), abas, ordenação e paginação, tudo na URL</td></tr>
+    <tr><td>Detalhe do NFT</td><td>Galeria com zoom, edições (1/1, 1/10, 1/50, aberta) com disponibilidade, limite de quantidade, favoritos, avaliações e relacionados</td></tr>
+    <tr><td>Carrinho</td><td>Quantidades, remoção, cupom, resumo calculado pela API, avisos de preço/estoque em tempo real</td></tr>
+    <tr><td>Pagamento</td><td>Dados do colecionador validados, escolha de carteira e rede, conexão simulada (aceite/recusa/desconexão), revisão e envio idempotente</td></tr>
+    <tr><td>Confirmação</td><td>Pedido pendente, confirmado (recibo-snapshot com hash e link simulado) ou recusado</td></tr>
+    <tr><td>Login / Cadastro</td><td>Diálogo modal, validação, conflito de e-mail/usuário, retorno ao fluxo anterior</td></tr>
+    <tr><td>Perfil / Carteiras</td><td>Edição de dados, avatar, troca de senha, carteiras principal e secundária ("igual à principal")</td></tr>
+  </table>
+
+  <div class="callout"><b>Ideia central para apresentar:</b> o enunciado avalia comportamento em situações difíceis (falhas, concorrência, tempo real, sessão). A arquitetura foi pensada para que cada uma dessas situações seja <i>simulável, visível na interface e coberta por teste</i>.</div>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>2</span></div>
+</section>
+
+<!-- 3. Telas -->
+<section class="page">
+  <h2>2. Telas (capturas da regressão visual)</h2>
+  <div class="shots">
+    <div><div class="shot-crop"><img src="{{SHOT:inicio-desktop.png}}" alt="Início desktop" /></div><p class="caption">Início — desktop 1440 px</p></div>
+    <div><div class="shot-crop"><img src="{{SHOT:inicio-mobile.png}}" alt="Início mobile" /></div><p class="caption">Início — mobile 390 px</p></div>
+  </div>
+  <div class="shots" style="margin-top:4mm">
+    <div><div class="shot-crop"><img src="{{SHOT:detalhe-desktop.png}}" alt="Detalhe desktop" /></div><p class="caption">Detalhe do NFT — desktop</p></div>
+    <div><div class="shot-crop"><img src="{{SHOT:detalhe-mobile.png}}" alt="Detalhe mobile" /></div><p class="caption">Detalhe do NFT — mobile</p></div>
+  </div>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>3</span></div>
+</section>
+
+<section class="page">
+  <h2>2. Telas (continuação)</h2>
+  <div class="shots">
+    <div><div class="shot-crop"><img src="{{SHOT:carrinho-desktop.png}}" alt="Carrinho desktop" /></div><p class="caption">Carrinho — desktop</p></div>
+    <div><div class="shot-crop"><img src="{{SHOT:carrinho-mobile.png}}" alt="Carrinho mobile" /></div><p class="caption">Carrinho — mobile</p></div>
+  </div>
+  <div class="shots" style="margin-top:4mm">
+    <div><div class="shot-crop"><img src="{{SHOT:pagamento-desktop.png}}" alt="Pagamento desktop" /></div><p class="caption">Pagamento — desktop</p></div>
+    <div><div class="shot-crop"><img src="{{SHOT:pagamento-mobile.png}}" alt="Pagamento mobile" /></div><p class="caption">Pagamento — mobile</p></div>
+  </div>
+  <p class="caption" style="margin-top:4mm">As telas foram construídas a partir das medidas extraídas da API do Figma (fontes, cores, espaçamentos) e comparadas com os frames exportados em <code>design/figma/</code>.</p>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>4</span></div>
+</section>
+
+<!-- 4. Stack e arquitetura -->
+<section class="page">
+  <h2>3. Como foi construído</h2>
+  <h3>Stack — e o papel de cada peça</h3>
+  <table>
+    <tr><th>Peça</th><th>Papel na solução</th></tr>
+    <tr><td>TanStack Router</td><td>Rotas por arquivo, parâmetros de busca validados com Zod (o estado do catálogo vive na URL) e guarda das rotas privadas</td></tr>
+    <tr><td>TanStack Query</td><td>Cache por chave (isolado por usuário e por filtros), retries só para falhas transitórias, atualização otimista, invalidação após mutations e eventos</td></tr>
+    <tr><td>Axios</td><td>Toda chamada REST: token, carrinho de visitante, normalização de erros e detecção de sessão expirada em um só lugar</td></tr>
+    <tr><td>Socket.IO</td><td><code>nft.updated</code> e <code>order.updated</code> com id estável e versão; deduplicação e reconciliação com REST</td></tr>
+    <tr><td>MSW</td><td>API REST e servidor Socket.IO simulados no navegador, com estado persistente, cenários e reset</td></tr>
+    <tr><td>Tailwind + shadcn/ui</td><td>Tokens do Figma (cores, Roboto Mono) aplicados aos componentes Radix acessíveis (diálogos, drawers, abas, slider)</td></tr>
+    <tr><td>Zod + react-hook-form</td><td>Os mesmos schemas validam o formulário e são revalidados pela API simulada</td></tr>
+    <tr><td>Playwright / Lighthouse</td><td>E2E, acessibilidade (axe), regressão visual e auditoria de performance</td></tr>
+  </table>
+  <h3>Camadas</h3>
+  <div class="diagram">UI (React + shadcn/ui)
+   │  hooks por domínio (features/*)        ◄── realtimeBus ◄── socket.io-client
+   ▼                                                              ▲ WebSocket
+TanStack Query (cache)  ──►  Axios  ──►  fetch/XHR                │
+                                           │                      │
+┌──────────── camada de mocks (MSW, no navegador) ─────────────────┴───────┐
+│ handlers REST  ·  servidor Socket.IO (socket.io-binding)                   │
+│ domínio (carrinho, cotação, pedidos)  ·  banco em localStorage  ·  cenários│
+└────────────────────────────────────────────────────────────────────────────┘</div>
+  <p style="margin-top:3mm"><b>Contratos compartilhados:</b> <code>src/contracts</code> define os tipos e schemas usados pela interface, pelo Axios e pelos mocks. Mudar um contrato quebra a compilação em todos os lados — é isso que garante "contratos tipados entre transporte, estado e interface".</p>
+  <p><b>Regra de ouro dos mocks:</b> nenhum componente, hook ou o Axios contém dado fictício. A interface só conhece a rede; os testes e o painel de demonstração alteram o <i>estado do servidor simulado</i>, e a mudança chega pela resposta REST ou pelo evento.</p>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>5</span></div>
+</section>
+
+<!-- 5. Requisitos -->
+<section class="page">
+  <h2>4. Como cada critério de avaliação foi atendido</h2>
+  <table>
+    <tr><th style="width:24%">Critério (pontos)</th><th>Evidência</th></tr>
+    <tr><td>Fidelidade visual e responsividade (20)</td><td>Tokens e medidas extraídos do Figma; artes originais convertidas para WebP; layouts verificados em 390, 768 e 1440 px sem overflow; regressão visual de 4 telas × 2 tamanhos</td></tr>
+    <tr><td>Fluxos e experiência (20)</td><td>Compra completa até o recibo; conta completa; validações no cliente e na API; recuperação de erros com "Tentar novamente"; estados de carregamento, vazio e erro em todas as telas</td></tr>
+    <tr><td>Integração e estado (15)</td><td>URL como fonte do estado do catálogo; chaves de cache por usuário/parâmetros; cancelamento de respostas obsoletas; atualização otimista com rollback (favoritos); invalidação coerente</td></tr>
+    <tr><td>Tempo real (10)</td><td>Eventos com <code>eventId</code> e versão; duplicatas e eventos antigos ignorados; isolamento por usuário; reconciliação via REST ao reconectar; checkout bloqueia cotação desatualizada</td></tr>
+    <tr><td>Mocking (10)</td><td>MSW para REST e Socket.IO; 14 cenários reproduzíveis (URL, painel ou teste); banco persistente com reset; seed determinístico com 60 NFTs e 2 usuários</td></tr>
+    <tr><td>Testes (10)</td><td>{{TEST_COUNT}} testes Playwright cobrindo os 12 grupos do enunciado, no build de produção, com estado isolado, relógio controlado, relatório HTML e traces</td></tr>
+    <tr><td>Acessibilidade (5)</td><td>axe sem violações graves; teclado e foco visível; foco preso e devolvido em diálogos; erros associados aos campos; região <code>aria-live</code>; movimento reduzido</td></tr>
+    <tr><td>Performance (5)</td><td>Auditoria Lighthouse versionada, 3 medições por página/perfil com mediana, LCP/CLS/TBT e análise das causas (próxima seção)</td></tr>
+    <tr><td>Arquitetura e documentação (5)</td><td>Camadas claras, lint e tipos sem avisos, README (setup, credenciais, cenários, comandos) e ARCHITECTURE (contratos, eventos, sessão, cache, reconciliação, desvios)</td></tr>
+  </table>
+  <h3>Itens eliminatórios — todos evitados</h3>
+  <ul>
+    <li><b>Stack efetiva:</b> cada tecnologia obrigatória participa do fluxo real (nada "instalado e não usado").</li>
+    <li><b>Fluxos não apenas visuais:</b> toda ação passa pela API simulada e trata a resposta.</li>
+    <li><b>Compra só confirmada pela simulação:</b> o recibo aparece apenas quando o servidor muda o pedido para <code>confirmed</code>.</li>
+    <li><b>Sem exposição entre usuários:</b> cache por usuário, socket por sessão, filtro de eventos no servidor e no cliente, 403 em pedido alheio.</li>
+    <li><b>Eventos não simulados na UI:</b> chegam pelo <code>socket.io-client</code>, vindos do servidor MSW.</li>
+    <li><b>E2E executáveis:</b> <code>npm run test:e2e</code> a partir de um checkout limpo.</li>
+  </ul>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>6</span></div>
+</section>
+
+<!-- 6. Fluxos críticos -->
+<section class="page">
+  <h2>5. Os pontos mais delicados — e como foram resolvidos</h2>
+  <h3>Compra sem pedido duplicado (idempotência)</h3>
+  <ul>
+    <li>Cada tentativa de compra recebe uma <b>chave de idempotência</b>, salva junto com o corpo enviado.</li>
+    <li>Se a resposta demora (timeout) ou a rede cai, o app <b>reenvia com a mesma chave</b>: o servidor devolve o <i>mesmo</i> pedido. Cliques repetidos são ignorados enquanto há envio em andamento.</li>
+    <li>Mesma chave com conteúdo diferente → <code>409 IDEMPOTENCY_CONFLICT</code>.</li>
+    <li>Pedido pendente sobrevive a refresh: a página do pedido consulta o REST, ouve <code>order.updated</code> e faz polling de segurança.</li>
+  </ul>
+  <h3>Preço mudou durante a compra (cenário exigido)</h3>
+  <ol>
+    <li>Um NFT está no carrinho.</li>
+    <li>O servidor altera o preço e publica <code>nft.updated</code>.</li>
+    <li>O carrinho mostra "Preço alterado de X para Y", o resumo é recalculado pela API e o checkout informa as mudanças.</li>
+    <li>O botão de confirmar fica bloqueado até "Revisar novos valores". Se mesmo assim uma cotação velha chegar ao servidor, ele responde <code>409 QUOTE_STALE</code> com a nova cotação.</li>
+  </ol>
+  <h3>Sessão expirada no meio do caminho</h3>
+  <p>Qualquer 401 encerra a sessão local; em rota privada o usuário vai ao login com <code>?redirect=</code> e volta ao mesmo ponto. O formulário de pagamento é salvo continuamente e restaurado. Logout e troca de usuário limpam o cache privado e encerram o socket da sessão anterior.</p>
+  <h3>Valores em ETH sem erro de arredondamento</h3>
+  <p>Valores trafegam como strings decimais e são calculados com <code>decimal.js</code> (ex.: 2.78 − 0.278 + 0.016 = <b>2.518</b> exatos). O recibo é um <b>snapshot</b>: mudanças posteriores no catálogo não alteram o pedido.</p>
+  <h3>Respostas fora de ordem</h3>
+  <p>Cada combinação de filtros tem sua própria chave de cache e a requisição anterior é cancelada; com latência variável, o grid sempre corresponde aos filtros finais (há teste para isso).</p>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>7</span></div>
+</section>
+
+<!-- 7. Mocks e testes -->
+<section class="page">
+  <h2>6. Mocks e testes</h2>
+  <h3>Cenários da API simulada</h3>
+  <table>
+    <tr><th>Cenário</th><th>O que demonstra</th></tr>
+    <tr><td><code>slow</code> · <code>variable-latency</code></td><td>Skeletons com shimmer · respostas fora de ordem</td></tr>
+    <tr><td><code>offline</code> · <code>server-error</code> · <code>flaky</code></td><td>Falha de rede · HTTP 500 com nova tentativa · 503 recuperado pelo retry automático</td></tr>
+    <tr><td><code>empty</code> · <code>favorites-fail</code></td><td>Resultado vazio · rollback da atualização otimista</td></tr>
+    <tr><td><code>session-short</code> · <code>wallet-reject</code></td><td>Expiração de sessão · carteira recusando a conexão</td></tr>
+    <tr><td><code>price-change</code> · <code>sold-out</code></td><td>Preço muda no checkout · edição esgota na confirmação</td></tr>
+    <tr><td><code>order-timeout</code> · <code>payment-declined</code></td><td>Timeout com recuperação idempotente · pagamento recusado</td></tr>
+  </table>
+  <p>Seleção pela URL (<code>?scenario=slow</code>), pelo <b>painel "Mocks"</b> na própria aplicação (também dispara eventos, derruba o socket, expira a sessão e reseta tudo) ou pelos testes.</p>
+  <h3>Testes Playwright</h3>
+  <table>
+    <tr><th>Grupo do enunciado</th><th>Arquivo</th></tr>
+    <tr><td>1 Busca, filtros, ordenação, paginação, histórico</td><td><code>catalog.spec.ts</code></td></tr>
+    <tr><td>2 Acesso direto e recurso inexistente</td><td><code>detail.spec.ts</code></td></tr>
+    <tr><td>3 Cadastro, login, expiração, logout, troca de usuário</td><td><code>auth.spec.ts</code></td></tr>
+    <tr><td>4 Favoritos com falha e recuperação</td><td><code>favorites.spec.ts</code></td></tr>
+    <tr><td>5 Carrinho, cupom, refresh e login</td><td><code>cart.spec.ts</code></td></tr>
+    <tr><td>6–7 Compra completa, recusa, clique repetido, timeout</td><td><code>checkout.spec.ts</code></td></tr>
+    <tr><td>8 Perfil, avatar, senha, carteiras</td><td><code>account.spec.ts</code></td></tr>
+    <tr><td>9–10 Socket.IO: preço no checkout, duplicatas, queda e retomada</td><td><code>realtime.spec.ts</code></td></tr>
+    <tr><td>11–12 Teclado, diálogos, formulários, skeletons e falhas</td><td><code>a11y-loading.spec.ts</code></td></tr>
+    <tr><td>Regressão visual (início, detalhe, carrinho, pagamento)</td><td><code>visual.spec.ts</code></td></tr>
+  </table>
+  <p>Os testes encontraram e ajudaram a corrigir problemas reais durante o desenvolvimento — por exemplo, o foco que não voltava ao fechar a busca e uma página privada que quebrava quando a sessão expirava.</p>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>8</span></div>
+</section>
+
+<!-- 8. Performance -->
+<section class="page">
+  <h2>7. Performance e acessibilidade (Lighthouse)</h2>
+  <p>Mediana de 3 medições por página e perfil, no build de produção com o cenário padrão dos mocks. Metas: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 90.</p>
+  <table>
+    <tr><th>Página</th><th>Perfil</th><th>Perf.</th><th>A11y</th><th>Best Pr.</th><th>SEO</th><th>LCP</th><th>CLS</th><th>TBT</th></tr>
+    {{LIGHTHOUSE_ROWS}}
+  </table>
+  <p class="caption">{{LIGHTHOUSE_ENV}}. Relatórios HTML/JSON em <code>lighthouse/reports/</code>.</p>
+  <h3>O que foi feito para chegar lá</h3>
+  <ul>
+    <li><b>Imagens:</b> artes de ~2 MB do Figma viraram WebP responsivo de 11–48 KB, com dimensões reservadas (sem saltos de layout) e lazy loading fora da tela.</li>
+    <li><b>LCP:</b> a arte do banner é pré-carregada no HTML e o banner não depende da API.</li>
+    <li><b>Bundle dos mocks 3× menor:</b> uma dependência do MSW (tough-cookie) embutia uma lista de domínios de ~120 KB que a aplicação não usa; foi trocada por um substituto mínimo. A performance mobile foi de 84 para 91.</li>
+    <li><b>Decisões medidas:</b> testei baixar mocks e aplicação em paralelo, mas no 4G simulado isso piorou o LCP; a ordem sequencial foi mantida com base na medição.</li>
+    <li><b>Fonte pré-carregada:</b> eliminou o deslocamento de layout causado pela troca tardia da fonte.</li>
+    <li><b>CLS:</b> skeletons com as dimensões finais; seções secundárias só aparecem após o conteúdo principal.</li>
+    <li><b>Code splitting por rota</b> e fonte servida localmente.</li>
+  </ul>
+  <div class="callout"><b>Ponto honesto para a apresentação:</b> parte do custo de carregamento no mobile vem da própria API simulada (MSW, fixtures e handlers, ~54 KB comprimidos), que em produção com backend real não existiria. Ela foi mantida na auditoria porque o enunciado pede medir a entrega real, sem simplificações só para a nota.</div>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>9</span></div>
+</section>
+
+<!-- 9. Roteiro de demonstração -->
+<section class="page">
+  <h2>8. Roteiro de demonstração (~10 minutos)</h2>
+  <ol class="steps">
+    <li><b>Catálogo (1 min).</b> Na home, filtre por "Música" + "Ethereum", ordene por menor preço e vá à página 2. Recarregue a página e use o botão voltar: o estado é mantido. Mostre o painel "Mocks" → "Rede lenta" para os skeletons.</li>
+    <li><b>Detalhe (1 min).</b> Abra "Sage Nomad #009": a edição 1/1 está esgotada e não pode ser escolhida; aumente a quantidade até o limite. Acesse <code>/nft/nao-existe</code> para o 404.</li>
+    <li><b>Carrinho como visitante (1 min).</b> Adicione dois NFTs, aplique <code>VERAO2025</code> (expirado), depois <code>KURIO10</code>. Mostre que o total vem da API.</li>
+    <li><b>Login e retorno ao fluxo (1 min).</b> "Conectar e finalizar" → login com <code>ana@kurio.dev</code> / <code>Kurio@2026</code> → volta direto ao pagamento, com os itens do visitante preservados.</li>
+    <li><b>Tempo real no checkout (2 min).</b> No pagamento, abra o painel → "Subir preço do 1º item do carrinho". O aviso aparece e o botão de confirmar é bloqueado. Clique em "Revisar novos valores".</li>
+    <li><b>Compra (1 min).</b> "Confirmar compra" → a carteira conecta → revisão → confirmar. Mostre o estado pendente e o recibo chegando via <code>order.updated</code>.</li>
+    <li><b>Falhas de pagamento (2 min).</b> Painel → "Timeout no pedido" e compre de novo: após ~8 s o app reenvia com a mesma chave e abre o mesmo pedido. Depois "Pagamento recusado": os itens continuam no carrinho.</li>
+    <li><b>Conta (1 min).</b> Perfil: troque o avatar, tente usar o usuário <code>bruno.holder</code> (conflito). Carteiras: cadastre a secundária "igual à principal". Painel → "Expirar sessão agora" e navegue.</li>
+  </ol>
+  <div class="callout">Se algo sair do esperado durante a demonstração, use o painel "Mocks" → <b>"Resetar todos os dados"</b> para voltar ao estado inicial conhecido.</div>
+  <h3>Comandos úteis para mostrar</h3>
+  <p><code>npm run test:e2e</code> (suíte completa) · <code>npm run test:e2e:report</code> (relatório HTML) · <code>npm run lighthouse</code> (auditoria)</p>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>10</span></div>
+</section>
+
+<!-- 10. Decisões e perguntas -->
+<section class="page">
+  <h2>9. Decisões, desvios do Figma e limitações</h2>
+  <ul>
+    <li><b>Login/cadastro</b> como diálogo sobre a home (Figma); em tela cheia no mobile.</li>
+    <li><b>Funcionalidades fora do escopo</b> (login social, recuperar senha, newsletter, Criadores, Aprenda, Atividade, Ofertas, Suporte) mostram que não estão disponíveis — nunca simulam sucesso.</li>
+    <li><b>Telas sem frame</b> (pedido pendente/recusado, revisão do pedido, favoritos, estados de erro/vazio) seguem a mesma identidade visual.</li>
+    <li><b>Galeria:</b> o Figma repete a mesma imagem nas miniaturas; viraram 4 vistas (obra inteira e detalhes).</li>
+    <li><b>Pagamento:</b> une a proposta do desktop (formulário) e do mobile (cartões de carteira) em todas as larguras.</li>
+    <li><b>Limitações:</b> blockchain, carteiras e pagamentos são simulados; os dados ficam no navegador de cada visitante; baselines visuais geradas no Windows.</li>
+  </ul>
+
+  <h2 style="margin-top:7mm">10. Perguntas prováveis</h2>
+  <dl class="qa">
+    <dt>Por que os mocks rodam no navegador e não num servidor?</dt>
+    <dd>O enunciado pede MSW e deploy estático funcionando com mocks e tempo real. Rodar no navegador garante que a URL publicada funcione sem infraestrutura, e os mesmos handlers servem desenvolvimento, demonstração e testes.</dd>
+    <dt>Como os eventos Socket.IO funcionam sem servidor?</dt>
+    <dd>O MSW intercepta o WebSocket aberto pelo <code>socket.io-client</code> e o <code>@mswjs/socket.io-binding</code> fala o protocolo Socket.IO. Detalhe técnico: o engine.io guarda o construtor de WebSocket ao carregar, então o cliente Socket.IO só é importado depois que o MSW inicia.</dd>
+    <dt>Como você evita mostrar dados de um usuário para outro?</dt>
+    <dd>Chaves de cache com o id do usuário, limpeza do cache no logout/troca, um socket por sessão autenticado pelo token, filtro de <code>order.updated</code> no servidor e conferência do <code>userId</code> no cliente, além de 403 para pedidos de outra conta.</dd>
+    <dt>Onde está a atualização otimista?</dt>
+    <dd>Nos favoritos: a interface muda na hora; se a API falhar (cenário <code>favorites-fail</code>), volta ao estado anterior e avisa.</dd>
+    <dt>O que você faria com mais tempo?</dt>
+    <dd>Separar a camada de mocks do bundle de produção num build dedicado de demonstração, adicionar testes de contrato e um backend real atrás dos mesmos contratos.</dd>
+  </dl>
+  <div class="footer"><span>Kurio · Apresentação do projeto</span><span>11</span></div>
+</section>
+
+</body>
+</html>

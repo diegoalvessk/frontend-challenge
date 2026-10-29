@@ -1,4 +1,4 @@
-import { io, type Socket } from 'socket.io-client'
+import type { Socket } from 'socket.io-client'
 import type { QueryClient } from '@tanstack/react-query'
 import type {
   CatalogResponse,
@@ -12,6 +12,7 @@ import type {
   ServerToClientEvents,
 } from '@/contracts'
 import { queryKeys } from '@/api/query-client'
+import { apiReady } from '@/lib/api-ready'
 
 export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ?? 'wss://realtime.kurio.mock'
 
@@ -140,7 +141,13 @@ export function applyOrderEvent(queryClient: QueryClient, userId: string, event:
   }
 }
 
-export function createSocket(token: string | null): RealtimeSocket {
+/**
+ * Cria o socket só depois que a API (mocks) está pronta. O import dinâmico
+ * garante que o engine.io-client capture o `WebSocket` já interceptado pelo MSW.
+ */
+export async function createSocket(token: string | null): Promise<RealtimeSocket> {
+  await apiReady
+  const { io } = await import('socket.io-client')
   return io(SOCKET_URL, {
     transports: ['websocket'],
     auth: { token },

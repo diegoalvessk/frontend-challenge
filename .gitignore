@@ -36,3 +36,4 @@ dist-ssr
 
 # Scripts temporários locais
 *.tmp.mjs
+lighthouse-run.log

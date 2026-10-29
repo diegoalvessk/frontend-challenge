@@ -336,6 +336,9 @@ function NftDetailPage() {
               </TabsContent>
             </Tabs>
 
+            {/* Relacionados só após o conteúdo principal, evitando deslocamento de layout (CLS). */}
+            <Related nftId={nftId} />
+
             {/* Barra de compra fixa do mobile */}
             <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-4 rounded-t-[32px] bg-ink-900 px-6 pt-5 pb-[calc(env(safe-area-inset-bottom)+20px)] shadow-[0_-8px_24px_rgb(0_0_0/0.4)] md:hidden">
               <div className="flex items-center justify-between">
@@ -363,7 +366,6 @@ function NftDetailPage() {
           </>
         )}
 
-        <Related nftId={nftId} />
       </Container>
     </div>
   )

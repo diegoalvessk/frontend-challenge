@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import type { ApiErrorBody, ApiErrorCode } from '@/contracts'
 import { guestCartId, sessionStore } from '@/features/auth/session-store'
+import { apiReady } from '@/lib/api-ready'
 
 export type ClientErrorCode = ApiErrorCode | 'NETWORK_ERROR' | 'TIMEOUT' | 'CANCELED' | 'UNKNOWN'
 
@@ -34,7 +35,9 @@ export const http = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-http.interceptors.request.use((config) => {
+http.interceptors.request.use(async (config) => {
+  // Aguarda a API simulada ficar disponível (ver src/lib/api-ready.ts).
+  await apiReady
   const token = sessionStore.token()
   if (token) config.headers.set('Authorization', `Bearer ${token}`)
   config.headers.set('X-Guest-Cart-Id', guestCartId())

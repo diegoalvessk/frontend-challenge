@@ -14,6 +14,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
+      // Ver src/mocks/vendor/tough-cookie-lite.ts (remove ~120 KB comprimidos do bundle dos mocks).
+      'tough-cookie': path.resolve(import.meta.dirname, './src/mocks/vendor/tough-cookie-lite.ts'),
     },
   },
 })
