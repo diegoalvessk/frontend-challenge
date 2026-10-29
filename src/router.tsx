@@ -1,13 +1,15 @@
 import { createRouter } from '@tanstack/react-router'
-import { QueryClient } from '@tanstack/react-query'
+import { createQueryClient } from './api/query-client'
 import { routeTree } from './routeTree.gen'
 
-export const queryClient = new QueryClient()
+export const queryClient = createQueryClient()
 
 export const router = createRouter({
   routeTree,
   context: { queryClient },
   defaultPreload: 'intent',
+  // Os loaders apenas "aquecem" o cache; o TanStack Query decide quando refazer.
+  defaultPreloadStaleTime: 0,
   scrollRestoration: true,
 })
 
