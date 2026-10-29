@@ -25,7 +25,7 @@ export function MobileTopBar({ title, fallback = '/', action }: { title: string;
 }
 
 /** Navegação inferior do mobile (home e área do colecionador). */
-export function MobileBottomNav({ onSearch }: { onSearch?: () => void }) {
+export function MobileBottomNav({ onSearch }: { onSearch?: (opener: HTMLElement) => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const { data } = useCart()
   const count = data?.itemCount ?? 0
@@ -51,7 +51,7 @@ export function MobileBottomNav({ onSearch }: { onSearch?: () => void }) {
         <li className="-mt-10">
           <button
             type="button"
-            onClick={onSearch}
+            onClick={(event) => onSearch?.(event.currentTarget)}
             className="grid size-16 place-items-center rounded-full border-4 border-background bg-gradient-to-br from-amber to-copper text-primary-foreground"
             aria-label="Buscar NFTs"
           >

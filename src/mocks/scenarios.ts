@@ -80,8 +80,8 @@ export const SCENARIOS: Record<ScenarioId, ScenarioConfig> = {
     ...base,
     id: 'server-error',
     label: 'Erro 500 no catálogo',
-    description: 'Catálogo e detalhe falham 3 vezes por URL (esgotando os retries) e depois se recuperam.',
-    readFailures: { status: 500, attempts: 3, paths: /^\/api\/nfts/ },
+    description: 'Catálogo e detalhe retornam 500 (após os retries) até o cenário ser trocado.',
+    readFailures: { status: 500, attempts: Number.POSITIVE_INFINITY, paths: /^\/api\/nfts/ },
   },
   flaky: {
     ...base,

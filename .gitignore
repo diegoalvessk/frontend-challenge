@@ -33,3 +33,6 @@ dist-ssr
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Scripts temporários locais
+*.tmp.mjs

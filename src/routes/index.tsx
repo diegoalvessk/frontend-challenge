@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { Container } from '@/components/layout/page'
 import { MobileBottomNav } from '@/components/layout/mobile'
-import { SearchDialog } from '@/components/layout/site-header'
+import { useSearchDialog } from '@/components/layout/use-search-dialog'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { ActiveFilters, CatalogGrid, CatalogPagination, CatalogToolbar } from '@/features/catalog/components/catalog-results'
 import { Journal, Promos, SpotlightBanner } from '@/features/catalog/components/editorial'
@@ -28,8 +28,13 @@ function MobileSearch() {
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const [value, setValue] = useState(search.q ?? '')
+  const [syncedQ, setSyncedQ] = useState(search.q)
 
-  useEffect(() => setValue(search.q ?? ''), [search.q])
+  // Voltar/avançar no histórico: reflete a busca da URL no campo.
+  if (search.q !== syncedQ) {
+    setSyncedQ(search.q)
+    if ((search.q ?? '') !== value.trim()) setValue(search.q ?? '')
+  }
   useEffect(() => {
     if ((search.q ?? '') === value.trim()) return
     const timer = setTimeout(() => {
@@ -60,7 +65,7 @@ function HomePage() {
   const search = Route.useSearch()
   const query = toCatalogQuery(search)
   const catalog = useCatalog(query)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const searchDialog = useSearchDialog()
   const facets = catalog.data?.facets
 
   return (
@@ -127,8 +132,8 @@ function HomePage() {
           <Journal />
         </div>
       </Container>
-      <MobileBottomNav onSearch={() => setSearchOpen(true)} />
-      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      <MobileBottomNav onSearch={searchDialog.openFrom} />
+      {searchDialog.dialog}
     </div>
   )
 }

@@ -13,7 +13,7 @@ import type { Order } from '@/contracts'
 import { requireAuth } from '@/features/auth/require-auth'
 import { useSession } from '@/features/auth/session-store'
 import { attemptStore } from '@/features/checkout/attempt-store'
-import { shortAddress } from '@/features/checkout/components'
+import { shortAddress } from '@/features/checkout/format'
 import { announce } from '@/lib/announcer'
 import { formatEth } from '@/lib/money'
 
@@ -27,10 +27,9 @@ export const Route = createFileRoute('/pedidos/$orderId')({
  * também um polling leve como rede de segurança — e, após reconectar ou
  * recarregar, a consulta REST recupera o estado sem criar outro pedido.
  */
-function useOrder(orderId: string) {
-  const session = useSession()!
+function useOrder(userId: string, orderId: string) {
   return useQuery({
-    queryKey: queryKeys.order(session.user.id, orderId),
+    queryKey: queryKeys.order(userId, orderId),
     queryFn: ({ signal }) => ordersApi.get(orderId, { signal }),
     refetchInterval: (query) => (query.state.data?.status === 'pending' ? 5_000 : false),
   })
@@ -139,16 +138,20 @@ function Receipt({ order }: { order: Order }) {
 }
 
 function OrderPage() {
+  const session = useSession()
+  return session ? <OrderView userId={session.user.id} /> : null
+}
+
+function OrderView({ userId }: { userId: string }) {
   const { orderId } = Route.useParams()
-  const session = useSession()!
-  const { data: order, isPending, isError, error, refetch, isFetching } = useOrder(orderId)
+  const { data: order, isPending, isError, error, refetch, isFetching } = useOrder(userId, orderId)
 
   // Estado terminal: encerra a tentativa de checkout e anuncia o resultado.
   useEffect(() => {
     if (!order || order.status === 'pending') return
-    attemptStore.clear(session.user.id)
+    attemptStore.clear(userId)
     announce(order.status === 'confirmed' ? 'Pagamento confirmado. Seus NFTs estão na sua carteira.' : `Pagamento recusado. ${order.declineReason ?? ''}`)
-  }, [order, session.user.id])
+  }, [order, userId])
 
   return (
     <Container className="flex min-h-[70vh] items-start justify-center py-10 md:py-24">

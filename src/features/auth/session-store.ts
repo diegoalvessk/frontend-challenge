@@ -18,6 +18,8 @@ interface SessionState {
 
 const SESSION_KEY = 'session'
 const GUEST_CART_KEY = 'guest-cart-id'
+/** Motivo do último encerramento, mantido na aba para sobreviver a um reload. */
+const ENDED_KEY = 'session-ended'
 
 let state: SessionState = { session: storage.get<Session>(SESSION_KEY), endedBy: null }
 const listeners = new Set<() => void>()
@@ -54,6 +56,7 @@ export const sessionStore = {
       for (const listener of endListeners) listener('switch', previous)
     }
     storage.set(SESSION_KEY, session)
+    storage.remove(ENDED_KEY, sessionStorage)
     setState({ session, endedBy: null })
   },
 
@@ -65,9 +68,13 @@ export const sessionStore = {
   end(reason: SessionEndReason) {
     const previous = state.session
     storage.remove(SESSION_KEY)
+    storage.set(ENDED_KEY, reason, sessionStorage)
     setState({ session: null, endedBy: reason })
     if (previous) for (const listener of endListeners) listener(reason, previous)
   },
+
+  /** Motivo do último encerramento nesta aba (inclusive antes de um reload). */
+  lastEndReason: () => state.endedBy ?? storage.get<SessionEndReason>(ENDED_KEY, sessionStorage),
 
   clearEndReason() {
     if (state.endedBy) setState({ ...state, endedBy: null })

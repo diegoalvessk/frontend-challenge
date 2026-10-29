@@ -3,6 +3,7 @@ import { AlertTriangle, Download, Heart, LineChart, LogOut, MapPin, ShoppingCart
 import { MobileBottomNav } from '@/components/layout/mobile'
 import { Container } from '@/components/layout/page'
 import { requireAuth } from '@/features/auth/require-auth'
+import { useSession } from '@/features/auth/session-store'
 import { useLogout } from '@/features/auth/use-auth'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +26,12 @@ const SOON = [
 ] as const
 
 function ProfileLayout() {
+  // Sessão encerrada nesta tela: o ciclo de vida da sessão redireciona ao login.
+  if (!useSession()) return null
+  return <ProfileShell />
+}
+
+function ProfileShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname.replace(/\/$/, '') })
   const logout = useLogout()
   const item = (active: boolean) =>

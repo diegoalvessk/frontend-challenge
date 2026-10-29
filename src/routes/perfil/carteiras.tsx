@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { NETWORKS, WALLET_PROVIDERS, walletSchema, type Wallet, type WalletForm, type WalletSlot } from '@/contracts'
 import { useWallets } from '@/features/account/queries'
 import { useSession } from '@/features/auth/session-store'
-import { selectClass } from '@/features/checkout/components'
+import { selectClass } from '@/features/checkout/format'
 import { announce } from '@/lib/announcer'
 import { applyApiErrors } from '@/lib/forms'
 
@@ -43,7 +43,7 @@ function toForm(wallet: Wallet | null | undefined): WalletForm {
 
 function WalletEditor({ slot, initial, onCancel }: { slot: WalletSlot; initial: WalletForm; onCancel?: () => void }) {
   const queryClient = useQueryClient()
-  const userId = useSession()!.user.id
+  const userId = useSession()?.user.id ?? ''
   const [formError, setFormError] = useState<string | null>(null)
   const form = useForm<WalletForm>({ resolver: zodResolver(walletSchema), defaultValues: initial })
   const { errors } = form.formState
@@ -143,7 +143,7 @@ function WalletEditor({ slot, initial, onCancel }: { slot: WalletSlot; initial: 
 
 function WalletsPage() {
   const queryClient = useQueryClient()
-  const userId = useSession()!.user.id
+  const userId = useSession()?.user.id ?? ''
   const { data, isPending, isError, error, refetch, isFetching } = useWallets()
   const [editingPrimary, setEditingPrimary] = useState(false)
   const [secondaryDraft, setSecondaryDraft] = useState<WalletForm | null>(null)

@@ -74,8 +74,21 @@ export function orderUpdatedEvent(order: OrderRecord): OrderUpdatedEvent {
   }
 }
 
+/**
+ * O MSW não emite "close" quando o cliente fecha o socket ainda conectando
+ * (ex.: efeito desmontado pelo StrictMode). Conexões já fechadas são descartadas.
+ */
+function pruneClosed() {
+  for (const client of clients) {
+    // O tipo público do MSW não expõe `socket`, mas a conexão concreta o possui.
+    const socket = (client.connection.client as unknown as { socket?: WebSocket }).socket
+    if (socket && socket.readyState >= WebSocket.CLOSING) clients.delete(client)
+  }
+}
+
 /** Publica um evento: `nft.updated` para todos; `order.updated` só para o dono. */
 export function publish(event: RealtimeEvent) {
+  pruneClosed()
   for (const client of clients) {
     if (event.type === 'order.updated' && client.userId !== event.data.userId) continue
     client.io.client.emit(event.type, event)
@@ -93,6 +106,7 @@ export function restoreConnections() {
 }
 
 export function connectedClients() {
+  pruneClosed()
   return [...clients].map((c) => ({ id: c.id, userId: c.userId }))
 }
 

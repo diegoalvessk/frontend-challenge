@@ -16,11 +16,6 @@ export interface RouterContext {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
   notFoundComponent: NotFound,
-  errorComponent: ({ error, reset }) => (
-    <Container className="py-16">
-      <ErrorState message={error instanceof Error ? error.message : 'Erro inesperado.'} onRetry={reset} />
-    </Container>
-  ),
 })
 
 function RootLayout() {
@@ -44,6 +39,15 @@ function RootLayout() {
       <MockPanel />
       <Toaster position="top-right" closeButton />
     </TooltipProvider>
+  )
+}
+
+/** Erro de renderização/carregamento contido na rota (o layout raiz continua ativo). */
+export function RouteError({ error, reset }: { error: unknown; reset: () => void }) {
+  return (
+    <Container className="py-16">
+      <ErrorState message={error instanceof Error ? error.message : 'Erro inesperado.'} onRetry={reset} />
+    </Container>
   )
 }
 

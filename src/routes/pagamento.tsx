@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { AlertTriangle, Clock } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 import { checkoutApi } from '@/api/endpoints'
 import { isApiError } from '@/api/client'
@@ -13,14 +13,15 @@ import { Breadcrumbs, Container, ErrorState } from '@/components/layout/page'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { NETWORKS, WALLET_PROVIDERS, collectorSchema, type CollectorForm, type Network, type Wallet, type WalletProvider } from '@/contracts'
+import { NETWORKS, WALLET_PROVIDERS, collectorSchema, type CollectorForm, type Network, type Session, type Wallet, type WalletProvider } from '@/contracts'
 import { useProfile, useWallets } from '@/features/account/queries'
 import { requireAuth } from '@/features/auth/require-auth'
 import { useSession } from '@/features/auth/session-store'
 import { SummaryRows, SummarySkeleton } from '@/features/cart/components'
 import { useCart } from '@/features/cart/use-cart'
 import { attemptStore, draftStore } from '@/features/checkout/attempt-store'
-import { QuoteLines, ReviewDialog, WalletPicker, selectClass, type ConnectionState } from '@/features/checkout/components'
+import { QuoteLines, ReviewDialog, WalletPicker, type ConnectionState } from '@/features/checkout/components'
+import { selectClass } from '@/features/checkout/format'
 import { describeChange, isQuoteStale, usePlaceOrder, useQuote } from '@/features/checkout/use-checkout'
 import { announce } from '@/lib/announcer'
 import { applyApiErrors } from '@/lib/forms'
@@ -48,7 +49,12 @@ function defaultsFrom(wallet: Wallet | undefined, username: string): CollectorFo
 }
 
 function CheckoutPage() {
-  const session = useSession()!
+  // Sessão encerrada nesta tela: o ciclo de vida da sessão redireciona ao login (o rascunho fica salvo).
+  const session = useSession()
+  return session ? <Checkout session={session} /> : null
+}
+
+function Checkout({ session }: { session: Session }) {
   const userId = session.user.id
   const navigate = useNavigate()
   const profile = useProfile()
@@ -64,8 +70,8 @@ function CheckoutPage() {
 
   const form = useForm<CollectorForm>({ resolver: zodResolver(collectorSchema), defaultValues: defaultsFrom(undefined, session.user.username) })
   const { errors } = form.formState
-  const network = form.watch('network') as Network
-  const provider = form.watch('walletProvider') as WalletProvider
+  const network = useWatch({ control: form.control, name: 'network' }) as Network
+  const provider = useWatch({ control: form.control, name: 'walletProvider' }) as WalletProvider
 
   const cart = useCart(network)
   const cartReady = !!cart.data && cart.data.lines.length > 0 && cart.data.lines.every((l) => l.issues.length === 0)
@@ -85,10 +91,10 @@ function CheckoutPage() {
   }, [wallets.data, profile.data, userId, form])
 
   // Salva o rascunho continuamente (retomada após expiração/refresh).
-  useEffect(() => {
-    const sub = form.watch((values) => draftStore.set(userId, values))
-    return () => sub.unsubscribe()
-  }, [form, userId])
+  useEffect(
+    () => form.subscribe({ formState: { values: true }, callback: ({ values }) => draftStore.set(userId, values) }),
+    [form, userId],
+  )
 
   const chooseWallet = (id: string) => {
     const wallet = walletList.find((w) => w.id === id)
@@ -279,7 +285,10 @@ function CheckoutPage() {
                   <input
                     type="checkbox"
                     checked={useSecondary}
-                    onChange={(e) => chooseWallet((e.target.checked ? wallets.data?.secondary : wallets.data?.primary)!.id)}
+                    onChange={(e) => {
+                      const target = e.target.checked ? wallets.data?.secondary : wallets.data?.primary
+                      if (target) chooseWallet(target.id)
+                    }}
                     className="size-4 accent-primary"
                   />
                   Usar outra carteira?

@@ -7,6 +7,7 @@ import { sessionStore } from './session-store'
  */
 export function requireAuth({ location }: { location: ParsedLocation }) {
   if (!sessionStore.token()) {
-    throw redirect({ to: '/entrar', search: { redirect: location.href, motivo: 'protegida' } })
+    const motivo = sessionStore.lastEndReason() === 'expired' ? 'expirada' : 'protegida'
+    throw redirect({ to: '/entrar', search: { redirect: location.href, motivo } })
   }
 }

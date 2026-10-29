@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { Heart, Mail, ShoppingCart, Star } from 'lucide-react'
@@ -148,23 +148,18 @@ function NftDetailPage() {
   const favorites = useFavorites()
   const toggleFavorite = useToggleFavorite()
   const { add } = useCartMutations()
-  const [editionId, setEditionId] = useState<EditionId>('1-50')
-  const [quantity, setQuantity] = useState(1)
+  const [selectedEdition, setEditionId] = useState<EditionId>('1-50')
+  const [requestedQuantity, setQuantity] = useState(1)
   useLivePriceNotice(nftId, nft?.name)
 
-  const edition = nft?.editions.find((e) => e.id === editionId)
+  // Se a edição escolhida esgotar (ou vier esgotada), usa a próxima disponível.
+  const preferred = nft?.editions.find((e) => e.id === selectedEdition)
+  const edition = preferred && preferred.available > 0 ? preferred : (nft?.editions.find((e) => e.available > 0) ?? preferred)
+  const editionId = edition?.id ?? selectedEdition
   // Já no carrinho conta para o limite (disponibilidade e máximo por pedido).
   const inCart = cart?.lines.find((l) => l.nftId === nftId && l.editionId === editionId)?.quantity ?? 0
   const max = edition && nft ? Math.max(0, Math.min(edition.available, nft.maxPerOrder) - inCart) : 0
-
-  // Se a edição escolhida esgotar (ou vier esgotada), seleciona a próxima disponível.
-  useEffect(() => {
-    if (!nft) return
-    if (edition && edition.available > 0) return
-    const next = nft.editions.find((e) => e.available > 0)
-    if (next) setEditionId(next.id)
-  }, [nft, edition])
-  useEffect(() => setQuantity((q) => Math.max(1, Math.min(q, max || 1))), [max])
+  const quantity = Math.max(1, Math.min(requestedQuantity, max || 1))
 
   if (isError && isApiError(error, 'NOT_FOUND')) return <NotFound />
 

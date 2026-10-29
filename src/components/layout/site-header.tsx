@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
 import { LogIn, LogOut, Menu, Search, ShoppingCart, User, Wallet } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,12 +10,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { useLogout } from '@/features/auth/use-auth'
 import { useSession } from '@/features/auth/session-store'
 import { useCart } from '@/features/cart/use-cart'
 import { cn } from '@/lib/utils'
+import { useSearchDialog } from './use-search-dialog'
 import { UserAvatar } from './user-avatar'
 
 const NAV = [
@@ -31,34 +30,6 @@ export function Logo({ className }: { className?: string }) {
     <Link to="/" className={cn('text-sm font-bold tracking-[0.1em] text-foreground', className)} aria-label="Kurio — página inicial">
       KURIO
     </Link>
-  )
-}
-
-export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const navigate = useNavigate()
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="top-24 translate-y-0 border-border bg-card sm:max-w-lg">
-        <DialogTitle>Buscar NFTs</DialogTitle>
-        <DialogDescription>Procure por nome, coleção ou criador.</DialogDescription>
-        <form
-          role="search"
-          onSubmit={(event) => {
-            event.preventDefault()
-            const q = String(new FormData(event.currentTarget).get('q') ?? '').trim()
-            onOpenChange(false)
-            void navigate({ to: '/', search: (prev) => ({ ...prev, q: q || undefined, page: undefined }), hash: 'catalogo' })
-          }}
-          className="flex gap-2"
-        >
-          <label htmlFor="global-search" className="sr-only">
-            Termo de busca
-          </label>
-          <Input id="global-search" name="q" type="search" placeholder="Ex.: Emerald Ape" autoComplete="off" autoFocus />
-          <Button type="submit">Buscar</Button>
-        </form>
-      </DialogContent>
-    </Dialog>
   )
 }
 
@@ -130,7 +101,7 @@ function AccountMenu() {
 /** Cabeçalho desktop/tablet (no mobile cada tela tem sua barra superior). */
 export function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
-  const [searchOpen, setSearchOpen] = useState(false)
+  const search = useSearchDialog()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -191,7 +162,7 @@ export function SiteHeader() {
           <button
             type="button"
             className="grid size-10 place-items-center text-foreground hover:text-amber"
-            onClick={() => setSearchOpen(true)}
+            onClick={(event) => search.openFrom(event.currentTarget)}
             aria-label="Buscar NFTs"
           >
             <Search className="size-5" aria-hidden />
@@ -200,7 +171,7 @@ export function SiteHeader() {
           <AccountMenu />
         </div>
       </div>
-      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      {search.dialog}
     </header>
   )
 }

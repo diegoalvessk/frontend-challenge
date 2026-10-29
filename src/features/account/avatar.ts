@@ -8,7 +8,12 @@ const MAX_INPUT_BYTES = 5 * 1024 * 1024
 export async function prepareAvatar(file: File): Promise<string> {
   if (!ACCEPTED.includes(file.type)) throw new Error('Use uma imagem PNG, JPEG ou WebP.')
   if (file.size > MAX_INPUT_BYTES) throw new Error('A imagem deve ter no máximo 5 MB.')
-  const bitmap = await createImageBitmap(file)
+  let bitmap: ImageBitmap
+  try {
+    bitmap = await createImageBitmap(file)
+  } catch {
+    throw new Error('Não foi possível ler a imagem. Tente outro arquivo.')
+  }
   const size = 128
   const canvas = document.createElement('canvas')
   canvas.width = size

@@ -33,14 +33,23 @@ export function useQuote(network: Network, enabled: boolean) {
   const queryClient = useQueryClient()
   const [quote, setQuote] = useState<Quote | null>(null)
   const [changes, setChanges] = useState<QuoteChange[]>([])
+  const [expired, setExpired] = useState(false)
   const quoteRef = useRef<Quote | null>(null)
-  quoteRef.current = quote
+
+  useEffect(() => {
+    quoteRef.current = quote
+    if (!quote) return
+    // A cotação tem validade: ao expirar, exige nova revisão.
+    const timer = setTimeout(() => setExpired(true), Math.max(0, new Date(quote.expiresAt).getTime() - Date.now()))
+    return () => clearTimeout(timer)
+  }, [quote])
 
   const create = useMutation({
     mutationFn: (net: Network) => checkoutApi.quote(net),
     onSuccess: (data) => {
       setQuote(data)
       setChanges([])
+      setExpired(false)
     },
   })
 
@@ -86,14 +95,14 @@ export function useQuote(network: Network, enabled: boolean) {
   }, [mutate, network, queryClient])
 
   const markStale = useCallback((details: QuoteStaleDetails) => {
-    setChanges(details.changes.length ? details.changes : [])
-    setQuote((prev) => prev && { ...prev, expiresAt: new Date(0).toISOString() })
+    setChanges(details.changes)
+    if (details.changes.length === 0) setExpired(true)
   }, [])
 
   return {
     quote,
     changes,
-    stale: changes.length > 0 || (quote ? new Date(quote.expiresAt).getTime() < Date.now() : false),
+    stale: changes.length > 0 || expired,
     loading: create.isPending,
     error: create.error,
     retry: () => mutate(network),

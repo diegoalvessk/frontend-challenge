@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import type { CatalogResponse } from '@/contracts'
 import { CATEGORIES, NETWORKS } from '@/contracts'
@@ -14,13 +14,15 @@ const formatPt = (value: number) => value.toFixed(2).replace('.', ',')
 
 function PriceRange({ facets }: { facets: CatalogResponse['facets'] | undefined }) {
   const search = route.useSearch()
-  const navigate = route.useNavigate()
   const bounds: [number, number] = facets ? [Number(facets.priceRange.min), Number(facets.priceRange.max)] : [0, 13]
   const committed: [number, number] = [search.min ? Number(search.min) : bounds[0], search.max ? Number(search.max) : bounds[1]]
-  const [value, setValue] = useState<[number, number]>(committed)
+  // A key reinicia o controle quando a URL muda (voltar/avançar no histórico).
+  return <PriceRangeControl key={committed.join('-')} bounds={bounds} committed={committed} />
+}
 
-  // Mantém o controle sincronizado com a URL (voltar/avançar no histórico).
-  useEffect(() => setValue(committed), [committed[0], committed[1]]) // eslint-disable-line react-hooks/exhaustive-deps
+function PriceRangeControl({ bounds, committed }: { bounds: [number, number]; committed: [number, number] }) {
+  const navigate = route.useNavigate()
+  const [value, setValue] = useState<[number, number]>(committed)
 
   return (
     <div className="flex flex-col gap-3 pl-3">

@@ -8,15 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import type { Cart, CartLine, CartSummary as Summary } from '@/contracts'
 import { formatEth } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { issueText } from './issues'
 import { useCartMutations } from './use-cart'
-
-export function issueText(line: Pick<CartLine, 'issues' | 'available' | 'acknowledgedPriceEth' | 'unitPriceEth' | 'quantity'>) {
-  return line.issues.map((issue) => {
-    if (issue === 'price-changed') return `Preço alterado de ${formatEth(line.acknowledgedPriceEth)} para ${formatEth(line.unitPriceEth)}.`
-    if (issue === 'unavailable') return 'Edição esgotada. Será removida ao aceitar os novos valores.'
-    return `Apenas ${line.available} disponível(is); a quantidade será ajustada.`
-  })
-}
 
 /** Resumo de valores exatamente como calculado pela API. */
 export function SummaryRows({ summary, className }: { summary: Summary; className?: string }) {

@@ -92,6 +92,9 @@ export const mockControl = {
 
   pendingOrderIds: () => Object.values(db().orders).filter((o) => o.status === 'pending').map((o) => o.id),
 
+  /** Pedidos registrados no servidor simulado (para verificar ausência de duplicidade). */
+  orders: () => Object.values(db().orders).map(({ id, status, userId, idempotencyKey }) => ({ id, status, userId, idempotencyKey })),
+
   nft: (id: string) => findNft(id) ?? null,
 }
 

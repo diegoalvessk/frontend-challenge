@@ -7,13 +7,7 @@ import { NETWORKS, WALLET_PROVIDERS, type Network, type Quote, type Wallet, type
 import { formatEth } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { SummaryRows } from '@/features/cart/components'
-
-export const selectClass =
-  'h-10 w-full appearance-none rounded-sm border border-input bg-background bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 fill=%27none%27 stroke=%27%23cfb28c%27 stroke-width=%272%27%3E%3Cpath d=%27m4 6 4 4 4-4%27/%3E%3C/svg%3E")] bg-[position:right_12px_center] bg-no-repeat px-3 pr-9 text-sm text-foreground aria-invalid:border-destructive'
-
-export function shortAddress(address: string) {
-  return address.length > 12 ? `${address.slice(0, 6)}…${address.slice(-4)}` : address
-}
+import { shortAddress } from './format'
 
 export function QuoteLines({ quote }: { quote: Quote }) {
   return (
@@ -22,7 +16,7 @@ export function QuoteLines({ quote }: { quote: Quote }) {
         <li key={`${line.nftId}-${line.editionId}`} className="flex items-center gap-3 bg-card">
           <NftImage artwork={line.artwork} alt="" sizes="70px" className="size-[70px]" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-bold">{line.name}</p>
+            <p className="text-base font-bold md:truncate">{line.name}</p>
             <p className="text-[13px] text-khaki">
               ID do token: {line.tokenId} · {line.editionLabel}
             </p>
