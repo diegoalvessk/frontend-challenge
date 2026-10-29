@@ -196,7 +196,8 @@ function NftDetailPage() {
           )
         }
       />
-      <Container className="md:pt-8">
+      {/* Altura mínima da tela: o rodapé não aparece (e depois salta) enquanto o NFT carrega. */}
+      <Container className="md:min-h-[calc(100dvh-69px)] md:pt-8">
         <Breadcrumbs items={[{ label: 'Início', to: '/' }, { label: 'Mercado', to: '/', hash: 'catalogo' }, ...(nft ? [{ label: nft.name }] : [])]} className="mb-3" />
 
         {isPending ? (
