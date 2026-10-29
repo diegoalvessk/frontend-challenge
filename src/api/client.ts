@@ -63,7 +63,15 @@ function toApiError(error: unknown): ApiError {
   return new ApiError({ status: 0, code: 'UNKNOWN', message: 'Erro inesperado.' })
 }
 
-http.interceptors.response.use(undefined, (error: unknown) => {
+// A API sempre responde JSON. Qualquer outra coisa (ex.: o index.html servido
+// quando a API simulada ainda não está ativa) é tratada como falha, nunca como dado.
+http.interceptors.response.use((response) => {
+  const type = String(response.headers['content-type'] ?? '')
+  if (response.status !== 204 && response.data !== '' && !type.includes('application/json')) {
+    throw new ApiError({ status: response.status, code: 'SERVICE_UNAVAILABLE', message: 'A API não respondeu como esperado. Tente novamente.' })
+  }
+  return response
+}, (error: unknown) => {
   const apiError = toApiError(error)
   // Sessão expirada/inválida durante a navegação: encerra localmente.
   // A interface decide como retomar (ver `SessionWatcher`).

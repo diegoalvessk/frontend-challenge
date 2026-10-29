@@ -21,7 +21,23 @@ const GUEST_CART_KEY = 'guest-cart-id'
 /** Motivo do último encerramento, mantido na aba para sobreviver a um reload. */
 const ENDED_KEY = 'session-ended'
 
-let state: SessionState = { session: storage.get<Session>(SESSION_KEY), endedBy: null }
+/** Confere o formato antes de confiar em dados persistidos ou recebidos. */
+function isSession(value: unknown): value is Session {
+  const s = value as Session | null
+  return !!s && typeof s === 'object' && typeof s.token === 'string' && typeof s.expiresAt === 'string' && !!s.user && typeof s.user.id === 'string'
+}
+
+function readStoredSession(): Session | null {
+  const stored = storage.get<unknown>(SESSION_KEY)
+  if (stored !== null && !isSession(stored)) {
+    // Dado corrompido (ex.: versão antiga): descarta e segue como visitante.
+    storage.remove(SESSION_KEY)
+    return null
+  }
+  return stored
+}
+
+let state: SessionState = { session: readStoredSession(), endedBy: null }
 const listeners = new Set<() => void>()
 const endListeners = new Set<(reason: SessionEndReason, previous: Session) => void>()
 
@@ -51,6 +67,7 @@ export const sessionStore = {
   },
 
   start(session: Session) {
+    if (!isSession(session)) return
     const previous = state.session
     if (previous && previous.user.id !== session.user.id) {
       for (const listener of endListeners) listener('switch', previous)
@@ -61,6 +78,7 @@ export const sessionStore = {
   },
 
   update(session: Session) {
+    if (!isSession(session)) return
     storage.set(SESSION_KEY, session)
     setState({ ...state, session })
   },
