@@ -14,6 +14,7 @@ import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as CarrinhoRouteImport } from './routes/carrinho'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PagamentoRouteImport } from './routes/pagamento'
+import { Route as PerfilRouteRouteImport } from './routes/perfil/route'
 import { Route as EmBreveSecaoRouteImport } from './routes/em-breve/$secao'
 import { Route as NftNftIdRouteImport } from './routes/nft/$nftId'
 import { Route as PedidosOrderIdRouteImport } from './routes/pedidos/$orderId'
@@ -47,6 +48,11 @@ const PagamentoRoute = PagamentoRouteImport.update({
   path: '/pagamento',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerfilRouteRoute = PerfilRouteRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmBreveSecaoRoute = EmBreveSecaoRouteImport.update({
   id: '/em-breve/$secao',
   path: '/em-breve/$secao',
@@ -63,19 +69,19 @@ const PedidosOrderIdRoute = PedidosOrderIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerfilIndexRoute = PerfilIndexRouteImport.update({
-  id: '/perfil/',
-  path: '/perfil/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => PerfilRouteRoute,
 } as any)
 const PerfilCarteirasRoute = PerfilCarteirasRouteImport.update({
-  id: '/perfil/carteiras',
-  path: '/perfil/carteiras',
-  getParentRoute: () => rootRouteImport,
+  id: '/carteiras',
+  path: '/carteiras',
+  getParentRoute: () => PerfilRouteRoute,
 } as any)
 const PerfilFavoritosRoute = PerfilFavoritosRouteImport.update({
-  id: '/perfil/favoritos',
-  path: '/perfil/favoritos',
-  getParentRoute: () => rootRouteImport,
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => PerfilRouteRoute,
 } as any)
 const ExploradorTxHashRoute = ExploradorTxHashRouteImport.update({
   id: '/explorador/tx/$hash',
@@ -85,6 +91,7 @@ const ExploradorTxHashRoute = ExploradorTxHashRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/perfil': typeof PerfilRouteRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/carrinho': typeof CarrinhoRoute
   '/entrar': typeof EntrarRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/perfil': typeof PerfilRouteRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/carrinho': typeof CarrinhoRoute
   '/entrar': typeof EntrarRoute
@@ -130,6 +138,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/perfil'
     | '/cadastro'
     | '/carrinho'
     | '/entrar'
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/perfil'
     | '/cadastro'
     | '/carrinho'
     | '/entrar'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PerfilRouteRoute: typeof PerfilRouteRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   CarrinhoRoute: typeof CarrinhoRoute
   EntrarRoute: typeof EntrarRoute
@@ -180,9 +191,6 @@ export interface RootRouteChildren {
   EmBreveSecaoRoute: typeof EmBreveSecaoRoute
   NftNftIdRoute: typeof NftNftIdRoute
   PedidosOrderIdRoute: typeof PedidosOrderIdRoute
-  PerfilCarteirasRoute: typeof PerfilCarteirasRoute
-  PerfilFavoritosRoute: typeof PerfilFavoritosRoute
-  PerfilIndexRoute: typeof PerfilIndexRoute
   ExploradorTxHashRoute: typeof ExploradorTxHashRoute
 }
 
@@ -223,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PagamentoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/em-breve/$secao': {
       id: '/em-breve/$secao'
       path: '/em-breve/$secao'
@@ -246,24 +261,24 @@ declare module '@tanstack/react-router' {
     }
     '/perfil/': {
       id: '/perfil/'
-      path: '/perfil'
+      path: '/'
       fullPath: '/perfil/'
       preLoaderRoute: typeof PerfilIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PerfilRouteRoute
     }
     '/perfil/carteiras': {
       id: '/perfil/carteiras'
-      path: '/perfil/carteiras'
+      path: '/carteiras'
       fullPath: '/perfil/carteiras'
       preLoaderRoute: typeof PerfilCarteirasRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PerfilRouteRoute
     }
     '/perfil/favoritos': {
       id: '/perfil/favoritos'
-      path: '/perfil/favoritos'
+      path: '/favoritos'
       fullPath: '/perfil/favoritos'
       preLoaderRoute: typeof PerfilFavoritosRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PerfilRouteRoute
     }
     '/explorador/tx/$hash': {
       id: '/explorador/tx/$hash'
@@ -275,8 +290,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PerfilRouteRouteChildren {
+  PerfilCarteirasRoute: typeof PerfilCarteirasRoute
+  PerfilFavoritosRoute: typeof PerfilFavoritosRoute
+  PerfilIndexRoute: typeof PerfilIndexRoute
+}
+
+const PerfilRouteRouteChildren: PerfilRouteRouteChildren = {
+  PerfilCarteirasRoute: PerfilCarteirasRoute,
+  PerfilFavoritosRoute: PerfilFavoritosRoute,
+  PerfilIndexRoute: PerfilIndexRoute,
+}
+
+const PerfilRouteRouteWithChildren = PerfilRouteRoute._addFileChildren(
+  PerfilRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PerfilRouteRoute: PerfilRouteRouteWithChildren,
   CadastroRoute: CadastroRoute,
   CarrinhoRoute: CarrinhoRoute,
   EntrarRoute: EntrarRoute,
@@ -284,9 +316,6 @@ const rootRouteChildren: RootRouteChildren = {
   EmBreveSecaoRoute: EmBreveSecaoRoute,
   NftNftIdRoute: NftNftIdRoute,
   PedidosOrderIdRoute: PedidosOrderIdRoute,
-  PerfilCarteirasRoute: PerfilCarteirasRoute,
-  PerfilFavoritosRoute: PerfilFavoritosRoute,
-  PerfilIndexRoute: PerfilIndexRoute,
   ExploradorTxHashRoute: ExploradorTxHashRoute,
 }
 export const routeTree = rootRouteImport
