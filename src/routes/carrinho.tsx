@@ -70,9 +70,10 @@ function CartPage() {
   const empty = cart && cart.lines.length === 0
 
   return (
-    <div className="pb-72 md:pb-0">
+    // No mobile a página ocupa a tela inteira para o resumo assentar no rodapé mesmo com poucos itens.
+    <div className="flex min-h-dvh flex-col md:block md:min-h-0">
       <MobileTopBar title="Carrinho de NFTs" />
-      <Container className="md:pt-8">
+      <Container className="flex flex-1 flex-col md:block md:pt-8">
         <Breadcrumbs items={[{ label: 'Início', to: '/' }, { label: 'Mercado', to: '/', hash: 'catalogo' }, { label: 'Carrinho' }]} className="mb-1" />
         <h1 className="sr-only">Carrinho de NFTs</h1>
 
@@ -90,7 +91,7 @@ function CartPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid gap-10 lg:grid-cols-[1fr_332px] lg:gap-[86px]">
+          <div className="flex flex-1 flex-col gap-6 md:grid md:gap-10 lg:grid-cols-[1fr_332px] lg:gap-[86px]">
             <section aria-label="Itens do carrinho" className="flex flex-col gap-3">
               <div className="hidden grid-cols-[70px_1fr_138px_136px_118px_40px] gap-x-4 border-b border-primary/30 pb-3 text-base font-bold md:grid" aria-hidden>
                 <span className="col-span-2">NFTs</span>
@@ -120,9 +121,11 @@ function CartPage() {
               )}
             </section>
 
+            {/* Mobile: sticky (não fixed) — o painel fica no rodapé ao rolar, mas ocupa espaço no fluxo,
+                então todos os itens podem rolar para cima dele, seja qual for a altura do painel. */}
             <aside
               aria-labelledby="summary-title"
-              className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-5 rounded-t-[32px] bg-ink-900 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom)+20px)] shadow-[0_-8px_24px_rgb(0_0_0/0.4)] md:static md:rounded-none md:bg-transparent md:p-0 md:shadow-none"
+              className="sticky bottom-0 z-30 -mx-6 mt-auto flex flex-col gap-3 rounded-t-[32px] bg-ink-900 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom)+36px)] shadow-[0_-8px_24px_rgb(0_0_0/0.4)] md:static md:mx-0 md:mt-0 md:gap-5 md:rounded-none md:bg-transparent md:p-0 md:shadow-none"
             >
               <h2 id="summary-title" className="hidden border-b border-primary/30 pb-3 text-lg font-bold md:block">
                 Resumo da carteira
@@ -135,7 +138,12 @@ function CartPage() {
                   <SummaryRows summary={cart!.summary} />
                 </>
               )}
-              <Button size="lg" className="h-[60px] rounded-full bg-gradient-to-r from-amber to-copper md:h-10 md:rounded-md" onClick={checkout} disabled={isPending || hasIssues}>
+              <Button
+                size="lg"
+                className="mt-4 h-[60px] rounded-full bg-gradient-to-r from-copper to-[#b37440] text-[15px] hover:from-amber hover:to-copper md:mt-0 md:h-10 md:rounded-md md:from-amber md:to-copper md:text-base"
+                onClick={checkout}
+                disabled={isPending || hasIssues}
+              >
                 Conectar e finalizar
               </Button>
               {hasIssues && <p className="text-center text-xs text-coral">Aceite os novos valores para finalizar.</p>}

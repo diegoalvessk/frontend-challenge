@@ -14,10 +14,10 @@ import { useCartMutations } from './use-cart'
 /** Resumo de valores exatamente como calculado pela API. */
 export function SummaryRows({ summary, className }: { summary: Summary; className?: string }) {
   return (
-    <dl className={cn("flex flex-col gap-3 text-base [&_dd]:whitespace-nowrap", className)} data-testid="cart-summary">
+    <dl className={cn("flex flex-col gap-3 text-[15px] md:text-base [&_dd]:whitespace-nowrap", className)} data-testid="cart-summary">
       <div className="flex justify-between gap-4">
         <dt>Subtotal</dt>
-        <dd className="text-lg" data-testid="summary-subtotal">
+        <dd className="md:text-lg" data-testid="summary-subtotal">
           {formatEth(summary.subtotalEth)}
         </dd>
       </div>
@@ -27,12 +27,12 @@ export function SummaryRows({ summary, className }: { summary: Summary; classNam
       </div>
       <div className="flex justify-between gap-4">
         <dt>Taxa de rede</dt>
-        <dd className="text-right text-lg">
+        <dd className="text-right md:text-lg">
           <span data-testid="summary-fee">{formatEth(summary.networkFeeEth)}</span>
           <span className="block text-xs text-amber">Taxa estimada</span>
         </dd>
       </div>
-      <div className="mt-3 flex justify-between gap-4 border-t border-primary/30 pt-4 text-lg font-bold">
+      <div className="flex items-center justify-between gap-4 font-bold max-md:[&_dd]:text-lg md:mt-3 md:border-t md:border-primary/30 md:pt-4 md:text-lg">
         <dt>Total</dt>
         <dd className="text-amber" data-testid="summary-total">
           {formatEth(summary.totalEth)}
@@ -96,7 +96,8 @@ export function CouponForm({ cart }: { cart: Cart }) {
       <label htmlFor="coupon" className="max-md:sr-only text-sm font-bold">
         Código promocional
       </label>
-      <div className="flex">
+      {/* No mobile: pílula única com o botão encaixado à direita, como no Figma. */}
+      <div className="flex max-md:rounded-full max-md:border max-md:border-primary/30 max-md:has-[[aria-invalid=true]]:border-coral">
         <input
           id="coupon"
           value={code}
@@ -107,9 +108,13 @@ export function CouponForm({ cart }: { cart: Cart }) {
           placeholder="Digite o código promocional..."
           aria-invalid={!!errorMessage}
           aria-describedby={errorMessage ? 'coupon-error' : undefined}
-          className="h-10 min-w-0 flex-1 rounded-l-sm border border-r-0 border-primary bg-transparent px-2 text-sm placeholder:text-khaki aria-invalid:border-coral"
+          className="h-10 min-w-0 flex-1 rounded-l-sm border border-r-0 border-primary bg-transparent px-2 text-sm placeholder:text-khaki aria-invalid:border-coral max-md:h-12 max-md:rounded-l-full max-md:border-0 max-md:pl-4 max-md:text-[13px]"
         />
-        <Button type="submit" className="rounded-l-none px-5" disabled={applyCoupon.isPending || !code.trim()}>
+        <Button
+          type="submit"
+          className="rounded-l-none px-5 max-md:-my-px max-md:-mr-px max-md:h-[50px] max-md:rounded-full max-md:bg-gradient-to-r max-md:from-[#8b5b35] max-md:to-copper max-md:text-[15px] max-md:text-cream max-md:disabled:opacity-100"
+          disabled={applyCoupon.isPending || !code.trim()}
+        >
           {applyCoupon.isPending ? 'Aplicando…' : 'Aplicar'}
         </Button>
       </div>
@@ -132,9 +137,9 @@ export function CartLineRow({ line }: { line: CartLine }) {
   const issues = issueText(line)
 
   return (
-    <li className={cn('flex flex-col bg-card transition-opacity', pending && 'opacity-60')} data-testid="cart-line" aria-busy={pending}>
-      <div className="grid grid-cols-[96px_1fr_auto] items-center gap-x-3 md:grid-cols-[70px_1fr_138px_136px_118px_40px] md:gap-x-4">
-        <NftImage artwork={line.artwork} alt="" sizes="96px" className="h-full rounded-l-xl md:size-[70px] md:rounded-none" />
+    <li className={cn('flex flex-col overflow-hidden rounded-xl bg-card transition-opacity md:rounded-none', pending && 'opacity-60')} data-testid="cart-line" aria-busy={pending}>
+      <div className="grid min-h-[100px] grid-cols-[100px_1fr_auto] items-center gap-x-2 md:min-h-0 md:grid-cols-[70px_1fr_138px_136px_118px_40px] md:gap-x-4">
+        <NftImage artwork={line.artwork} alt="" sizes="100px" className="h-full rounded-l-xl md:size-[70px] md:rounded-none" />
         <div className="flex min-w-0 flex-col gap-1 py-3 md:py-0">
           <p className="text-[15px] font-bold md:truncate">{line.name}</p>
           <p className="text-[13px] text-khaki">
@@ -146,13 +151,15 @@ export function CartLineRow({ line }: { line: CartLine }) {
           <span className="sr-only">Preço unitário: </span>
           {formatEth(line.unitPriceEth)}
         </p>
-        <div className="flex flex-col items-end gap-2 pr-3 md:items-start md:pr-0">
+        <div className="flex flex-col items-end gap-2 pr-4 md:items-start md:pr-0">
           <QuantityStepper
             value={Math.min(line.quantity, max)}
             max={max}
             onChange={(quantity) => update.mutate({ nftId: line.nftId, editionId: line.editionId, quantity })}
             label={`Quantidade de ${line.name}`}
             size="sm"
+            variant="subtle"
+            className="max-md:gap-1.5"
             disabled={pending || line.available === 0}
           />
           <button
@@ -197,8 +204,8 @@ export function CartLinesSkeleton() {
   return (
     <ul className="flex flex-col gap-3" aria-busy="true" aria-label="Carregando itens do carrinho" data-testid="cart-skeleton">
       {Array.from({ length: 3 }, (_, i) => (
-        <li key={i} className="flex h-[96px] items-center gap-4 bg-card md:h-[70px]">
-          <Skeleton className="h-full w-[96px] rounded-none md:w-[70px]" />
+        <li key={i} className="flex h-[100px] items-center gap-4 overflow-hidden rounded-xl bg-card md:h-[70px] md:rounded-none">
+          <Skeleton className="h-full w-[100px] rounded-none md:w-[70px]" />
           <div className="flex flex-1 flex-col gap-2">
             <Skeleton className="h-4 w-40" />
             <Skeleton className="h-3 w-28" />
