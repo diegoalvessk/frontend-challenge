@@ -20,6 +20,8 @@ const DEFAULT_PAGE_SIZE = 9
 const MAX_PAGE_SIZE = 24
 const NEW_WINDOW_MS = 10 * 86_400_000
 const TRENDING_POPULARITY = 600
+/** Itens em "Mais desta coleção": duas páginas de 5 no carrossel. */
+const RELATED_COUNT = 10
 
 export function toSummary(nft: NftDetail): NftSummary {
   const { id, name, tokenId, artwork, collection, category, network, priceEth, previousPriceEth, rarity, listedAt, popularity, soldOut, version } = nft
@@ -139,12 +141,25 @@ export const catalogHandlers = [
     handle(({ params }) => {
       const nft = findNft(params.id)
       if (!nft) fail(404, 'NOT_FOUND', 'NFT não encontrado.')
-      const related = db()
-        .nfts.filter((n) => n.id !== nft.id)
-        .sort((a, b) => Number(b.collection === nft.collection) - Number(a.collection === nft.collection) || SORTERS.recentes(a, b))
-        .slice(0, 8)
-        .map(toSummary)
-      return HttpResponse.json(related)
+      // Como no Figma, a seção mistura artes: intercala os grupos (a do NFT atual por último),
+      // e o ponto de partida em cada grupo depende do NFT, para cada página mostrar uma seleção
+      // diferente, mas estável entre recarregamentos (testes visuais).
+      const seed = [...nft.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)
+      const groups = new Map<string, NftDetail[]>()
+      for (const other of db().nfts.filter((n) => n.id !== nft.id).sort(SORTERS.recentes)) {
+        groups.set(other.artwork, [...(groups.get(other.artwork) ?? []), other])
+      }
+      const queues = [...groups.entries()]
+        .sort(([a], [b]) => Number(a === nft.artwork) - Number(b === nft.artwork) || a.localeCompare(b))
+        .map(([, items], index) => {
+          const start = (seed + index * 3) % items.length
+          return [...items.slice(start), ...items.slice(0, start)]
+        })
+      const related: NftDetail[] = []
+      for (let round = 0; related.length < RELATED_COUNT && queues.some((q) => q.length > round); round++) {
+        for (const queue of queues) if (queue[round] && related.length < RELATED_COUNT) related.push(queue[round])
+      }
+      return HttpResponse.json(related.map(toSummary))
     }),
   ),
 
