@@ -105,7 +105,8 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="hidden border-b border-primary/30 md:block">
+    // Fixo ao rolar só no desktop (no mobile as telas têm barra própria e navegação inferior).
+    <header className="hidden border-b border-primary/30 md:sticky md:top-0 md:z-40 md:block md:bg-background">
       <div className="mx-auto flex h-[69px] max-w-[1248px] items-start justify-between px-6 pt-6">
         <div className="flex w-40 items-center gap-2 pt-2">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>

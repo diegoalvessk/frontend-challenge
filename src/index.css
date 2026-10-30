@@ -88,7 +88,8 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply font-sans;
+    /* Desktop: o cabeçalho fixo (70px) não cobre o foco do teclado nem os destinos de âncora (#catalogo). */
+    @apply font-sans md:scroll-pt-20;
   }
   body {
     @apply bg-background text-foreground antialiased;
