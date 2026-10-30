@@ -2,7 +2,7 @@
 
 Solução do [Desafio Frontend da Jungle Gaming](https://github.com/junglegaming/frontend-challenge): marketplace de NFTs em React + TypeScript, fiel ao [layout do Figma](https://www.figma.com/design/Ff0SksUi7UFtPWUO8kyNtw/Frontend-Challenge?node-id=0-1), com API REST e tempo real totalmente simulados (MSW + Socket.IO).
 
-- **Aplicação publicada:** _(preenchido após o deploy)_
+- **Aplicação publicada:** https://frontend-challenge-orcin-omega.vercel.app
 - **Repositório:** https://github.com/diegoalvessk/frontend-challenge
 - **Arquitetura, contratos e decisões:** [`ARCHITECTURE.md`](ARCHITECTURE.md)
 
