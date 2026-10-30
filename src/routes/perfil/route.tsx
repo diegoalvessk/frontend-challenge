@@ -47,15 +47,25 @@ function ProfileShell() {
           <p className="px-3 pt-5 pb-1 text-xl font-bold md:px-2.5">Meu perfil</p>
           <nav aria-label="Seções do perfil" className="flex overflow-x-auto md:flex-col">
             {ITEMS.map(({ label, to, icon: Icon }) => (
-              <Link key={to} to={to} className={item(pathname === to)} aria-current={pathname === to ? 'page' : undefined}>
+              // exact: sem ele o Router marca /perfil como ativo (aria-current) em qualquer subpágina do perfil.
+              <Link key={to} to={to} activeOptions={{ exact: true }} className={item(pathname === to)} aria-current={pathname === to ? 'page' : undefined}>
                 <Icon className="size-5" aria-hidden /> {label}
               </Link>
             ))}
-            {SOON.map(({ label, secao, icon: Icon }) => (
-              <Link key={secao} to="/em-breve/$secao" params={{ secao }} className={cn(item(false), 'max-md:hidden')}>
-                <Icon className="size-5" aria-hidden /> {label}
-              </Link>
-            ))}
+            {SOON.map(({ label, secao, icon: Icon }) => {
+              const active = pathname === `/perfil/em-breve/${secao}`
+              return (
+                <Link
+                  key={secao}
+                  to="/perfil/em-breve/$secao"
+                  params={{ secao }}
+                  className={cn(item(active), 'max-md:hidden')}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <Icon className="size-5" aria-hidden /> {label}
+                </Link>
+              )
+            })}
           </nav>
           <button
             type="button"

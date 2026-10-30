@@ -22,6 +22,7 @@ import { Route as PerfilIndexRouteImport } from './routes/perfil/index'
 import { Route as PerfilCarteirasRouteImport } from './routes/perfil/carteiras'
 import { Route as PerfilFavoritosRouteImport } from './routes/perfil/favoritos'
 import { Route as ExploradorTxHashRouteImport } from './routes/explorador/tx/$hash'
+import { Route as PerfilEmBreveSecaoRouteImport } from './routes/perfil/em-breve.$secao'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +89,11 @@ const ExploradorTxHashRoute = ExploradorTxHashRouteImport.update({
   path: '/explorador/tx/$hash',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerfilEmBreveSecaoRoute = PerfilEmBreveSecaoRouteImport.update({
+  id: '/em-breve/$secao',
+  path: '/em-breve/$secao',
+  getParentRoute: () => PerfilRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/perfil/favoritos': typeof PerfilFavoritosRoute
   '/perfil/': typeof PerfilIndexRoute
   '/explorador/tx/$hash': typeof ExploradorTxHashRoute
+  '/perfil/em-breve/$secao': typeof PerfilEmBreveSecaoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/perfil/favoritos': typeof PerfilFavoritosRoute
   '/perfil': typeof PerfilIndexRoute
   '/explorador/tx/$hash': typeof ExploradorTxHashRoute
+  '/perfil/em-breve/$secao': typeof PerfilEmBreveSecaoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/perfil/favoritos': typeof PerfilFavoritosRoute
   '/perfil/': typeof PerfilIndexRoute
   '/explorador/tx/$hash': typeof ExploradorTxHashRoute
+  '/perfil/em-breve/$secao': typeof PerfilEmBreveSecaoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/perfil/favoritos'
     | '/perfil/'
     | '/explorador/tx/$hash'
+    | '/perfil/em-breve/$secao'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/perfil/favoritos'
     | '/perfil'
     | '/explorador/tx/$hash'
+    | '/perfil/em-breve/$secao'
   id:
     | '__root__'
     | '/'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/perfil/favoritos'
     | '/perfil/'
     | '/explorador/tx/$hash'
+    | '/perfil/em-breve/$secao'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -287,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploradorTxHashRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perfil/em-breve/$secao': {
+      id: '/perfil/em-breve/$secao'
+      path: '/em-breve/$secao'
+      fullPath: '/perfil/em-breve/$secao'
+      preLoaderRoute: typeof PerfilEmBreveSecaoRouteImport
+      parentRoute: typeof PerfilRouteRoute
+    }
   }
 }
 
@@ -294,12 +313,14 @@ interface PerfilRouteRouteChildren {
   PerfilCarteirasRoute: typeof PerfilCarteirasRoute
   PerfilFavoritosRoute: typeof PerfilFavoritosRoute
   PerfilIndexRoute: typeof PerfilIndexRoute
+  PerfilEmBreveSecaoRoute: typeof PerfilEmBreveSecaoRoute
 }
 
 const PerfilRouteRouteChildren: PerfilRouteRouteChildren = {
   PerfilCarteirasRoute: PerfilCarteirasRoute,
   PerfilFavoritosRoute: PerfilFavoritosRoute,
   PerfilIndexRoute: PerfilIndexRoute,
+  PerfilEmBreveSecaoRoute: PerfilEmBreveSecaoRoute,
 }
 
 const PerfilRouteRouteWithChildren = PerfilRouteRoute._addFileChildren(
