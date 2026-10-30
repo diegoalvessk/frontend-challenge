@@ -1,3 +1,5 @@
+import type { NftSummary } from '../../src/contracts/catalog'
+import type { Paginated } from '../../src/contracts/common'
 import { expect, open, test } from './support'
 
 const cards = (page: import('@playwright/test').Page) => page.getByTestId('catalog-grid').locator('> li')
@@ -50,13 +52,17 @@ test.describe('Catálogo', () => {
 
   test('busca por texto reflete os parâmetros enviados à API e trata resultado vazio', async ({ page }) => {
     await open(page, '/')
-    const request = page.waitForRequest((r) => r.url().includes('/api/nfts?') && r.url().includes('q=golden'))
+    const response = page.waitForResponse((r) => r.url().includes('/api/nfts?') && r.url().includes('q=golden'))
     await page.getByRole('button', { name: 'Buscar NFTs' }).first().click()
     await page.getByLabel('Termo de busca').fill('golden')
     await page.getByLabel('Termo de busca').press('Enter')
-    await request
+    const { items } = (await (await response).json()) as Paginated<NftSummary>
     await expect(page).toHaveURL(/q=golden/)
-    for (const name of await cards(page).getByRole('heading').allInnerTexts()) expect(name.toLowerCase()).toContain('golden')
+    // A busca cobre nome, coleção e criador: "Amber Pulse" entra por pertencer à coleção Golden Frequencies.
+    expect(items.length).toBeGreaterThan(0)
+    for (const nft of items) expect(`${nft.name} ${nft.collection}`.toLowerCase()).toContain('golden')
+    // O grid exibe exatamente a resposta (mantém os dados anteriores enquanto atualiza).
+    await expect(cards(page).getByRole('heading')).toHaveText(items.map((nft) => nft.name))
 
     await page.goto('/?q=nao-existe-nenhum')
     await expect(page.getByText('Nenhum NFT encontrado')).toBeVisible()
