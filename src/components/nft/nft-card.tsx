@@ -31,9 +31,9 @@ export function NftCard({ nft, sizes = '(min-width: 1024px) 258px, 50vw', priori
 
   return (
     <article className="group relative flex flex-col gap-3">
-      <div className="relative bg-card px-1 pt-6 pb-5">
+      <div className="relative bg-card px-1 pt-6 pb-5 max-lg:rounded-2xl">
         {nft.rarity !== 'comum' && (
-          <span className="absolute top-0 left-0 z-10 bg-primary px-3 py-1 text-[15px] font-medium text-primary-foreground uppercase">
+          <span className="absolute top-0 left-0 z-10 max-lg:top-6 bg-primary px-3 py-1 text-[15px] font-medium text-primary-foreground uppercase">
             {nft.rarity === 'raro' ? 'Raro' : 'Lendário'}
           </span>
         )}
@@ -98,7 +98,7 @@ export function NftCard({ nft, sizes = '(min-width: 1024px) 258px, 50vw', priori
 export function NftCardSkeleton() {
   return (
     <div className="flex flex-col gap-3" aria-hidden="true">
-      <div className="bg-card px-1 pt-6 pb-5">
+      <div className="bg-card px-1 pt-6 pb-5 max-lg:rounded-2xl">
         <Skeleton className="aspect-square w-full rounded-2xl" />
       </div>
       <Skeleton className="h-4 w-3/4" />

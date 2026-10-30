@@ -46,11 +46,26 @@ function Rating({ value, count }: { value: number; count: number }) {
   )
 }
 
+/** Versão compacta da avaliação usada no card do mobile (chip ao lado do título). */
+function RatingChip({ value, count, className }: { value: number; count: number; className?: string }) {
+  return (
+    <p className={cn('flex h-[26px] shrink-0 items-center gap-1 rounded-full border-[1.5px] border-primary px-1.5 text-sm', className)}>
+      <Star className="size-4 fill-current text-amber" aria-hidden />
+      <span className="sr-only">Nota </span>
+      <span className="font-bold">{value.toFixed(1)}</span>
+      <span className="text-sand">
+        <span className="sr-only">de 5, </span>({count}
+        <span className="sr-only"> avaliações</span>)
+      </span>
+    </p>
+  )
+}
+
 function EditionPicker({ nft, value, onChange }: { nft: NftDetail; value: EditionId; onChange: (id: EditionId) => void }) {
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="mb-3 text-[15px] leading-4 font-bold">Edição:</legend>
-      <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Edição">
+      <div className="flex flex-wrap gap-3 md:gap-1.5" role="radiogroup" aria-label="Edição">
         {nft.editions.map((edition) => {
           const unavailable = edition.available === 0
           const selected = edition.id === value
@@ -64,7 +79,7 @@ function EditionPicker({ nft, value, onChange }: { nft: NftDetail; value: Editio
               onClick={() => !unavailable && onChange(edition.id)}
               className={cn(
                 'h-7 rounded-full border px-2.5 text-sm transition-colors',
-                selected ? 'border-primary font-medium text-amber' : 'border-border text-sand hover:border-primary/60',
+                selected ? 'border-primary font-medium text-amber' : 'border-primary/50 text-sand hover:border-primary/80 md:border-border md:hover:border-primary/60',
                 unavailable && 'cursor-not-allowed line-through opacity-50',
               )}
               aria-label={`Edição ${edition.label}${unavailable ? ', esgotada' : `, ${formatEth(edition.priceEth)}`}`}
@@ -110,11 +125,16 @@ function Related({ nftId }: { nftId: string }) {
   const items = data?.slice(page * perPage, page * perPage + perPage)
 
   return (
-    <section aria-labelledby="related-title" className="mt-16 flex flex-col gap-8 md:mt-24">
+    // No mobile a seção continua a superfície do card de informações até o fim da página
+    // (o -mb compensa o espaço reservado à barra de compra fixa).
+    <section
+      aria-labelledby="related-title"
+      className="-mx-6 -mb-48 flex flex-col gap-8 bg-card px-6 pt-4 pb-56 md:mx-0 md:mt-24 md:mb-0 md:bg-transparent md:p-0"
+    >
       <h2 id="related-title" className="border-b border-primary/30 pb-3 text-[17px] font-bold text-amber">
         Mais desta coleção
       </h2>
-      <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 max-md:[&_.bg-card]:bg-ink-800 lg:grid-cols-5 lg:gap-6">
         {isPending
           ? Array.from({ length: perPage }, (_, i) => (
               <li key={i}>
@@ -206,14 +226,18 @@ function NftDetailPage() {
           <ErrorState title="Não foi possível carregar este NFT" message={error.message} onRetry={() => refetch()} retrying={isFetching} />
         ) : (
           <>
-            <article className="grid gap-8 md:grid-cols-[minmax(0,573px)_1fr]">
+            <article className="grid md:grid-cols-[minmax(0,573px)_1fr] md:gap-8">
               <NftGallery artwork={nft.artwork} name={nft.name} />
 
-              <div className="flex flex-col gap-5 rounded-t-[32px] bg-card px-6 pt-6 md:rounded-none md:bg-transparent md:p-0">
-                <header className="flex flex-col gap-3 border-b border-primary/30 pb-3">
-                  <h1 className="text-[22px] leading-[37px] font-bold md:text-[28px]">{nft.name}</h1>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="hidden text-[22px] leading-4 font-bold text-amber md:block" data-testid="detail-price">
+              {/* No mobile o card vai de borda a borda e sobe sobre a base da imagem, como no Figma. */}
+              <div className="relative -mx-6 -mt-[34px] flex flex-col gap-3 rounded-t-[32px] bg-card px-6 pt-7 pb-8 md:mx-0 md:mt-0 md:gap-5 md:rounded-none md:bg-transparent md:p-0">
+                <header className="flex flex-col gap-3 md:border-b md:border-primary/30 md:pb-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <h1 className="text-[22px] leading-[37px] font-bold md:text-[28px]">{nft.name}</h1>
+                    <RatingChip value={nft.rating} count={nft.reviewCount} className="md:hidden" />
+                  </div>
+                  <div className="hidden flex-wrap items-center justify-between gap-3 md:flex">
+                    <p className="text-[22px] leading-4 font-bold text-amber" data-testid="detail-price">
                       {formatEth(edition?.priceEth ?? nft.priceEth)}
                     </p>
                     <Rating value={nft.rating} count={nft.reviewCount} />
@@ -221,7 +245,7 @@ function NftDetailPage() {
                 </header>
 
                 <section className="flex flex-col gap-3">
-                  <h2 className="text-[15px] leading-4 font-bold">Sobre este NFT:</h2>
+                  <h2 className="sr-only text-[15px] leading-4 font-bold md:not-sr-only">Sobre este NFT:</h2>
                   <p className="text-sm leading-6 text-muted-foreground">{nft.description}</p>
                 </section>
 
@@ -341,26 +365,31 @@ function NftDetailPage() {
             <Related nftId={nftId} />
 
             {/* Barra de compra fixa do mobile */}
-            <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-4 rounded-t-[32px] bg-ink-900 px-6 pt-5 pb-[calc(env(safe-area-inset-bottom)+20px)] shadow-[0_-8px_24px_rgb(0_0_0/0.4)] md:hidden">
+            <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-5 rounded-t-[32px] bg-card px-6 pt-5 pb-[calc(env(safe-area-inset-bottom)+24px)] shadow-[0_-8px_24px_rgb(0_0_0/0.4)] md:hidden">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-base font-bold">Qtd.</span>
+                  <span className="text-[15px] text-sand">Qtd.</span>
                   <QuantityStepper value={quantity} max={max} onChange={setQuantity} label="Quantidade" size="sm" disabled={unavailable || limitReached} />
                 </div>
                 <p className="text-xl font-bold text-amber">{formatEth(edition?.priceEth ?? nft.priceEth)}</p>
               </div>
               <div className="flex gap-3">
-                <Button size="lg" className="h-[60px] flex-1 rounded-full bg-gradient-to-r from-amber to-copper" onClick={() => addToCart(true)} disabled={unavailable || limitReached || add.isPending}>
+                <Button
+                  size="lg"
+                  className="h-[60px] w-[196px] min-w-0 shrink rounded-full bg-gradient-to-r from-copper to-[#b37440] text-[15px] hover:from-amber hover:to-copper"
+                  onClick={() => addToCart(true)}
+                  disabled={unavailable || limitReached || add.isPending}
+                >
                   Comprar NFT
                 </Button>
                 <button
                   type="button"
                   onClick={() => addToCart(false)}
                   disabled={unavailable || limitReached || add.isPending}
-                  className="grid size-[60px] place-items-center rounded-full bg-card text-amber disabled:opacity-50"
+                  className="grid size-[60px] shrink-0 place-items-center rounded-full border border-primary/20 bg-ink-800 text-khaki hover:text-amber disabled:opacity-50"
                   aria-label="Adicionar ao carrinho"
                 >
-                  <ShoppingCart className="size-5" aria-hidden />
+                  <ShoppingCart className="size-5 fill-current" aria-hidden />
                 </button>
               </div>
             </div>
