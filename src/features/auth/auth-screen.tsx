@@ -18,9 +18,13 @@ import { useLogin, useRegister } from './use-auth'
 
 type Mode = 'login' | 'register'
 
+/** Campos e botão no tamanho do Figma mobile (no desktop seguem o padrão do diálogo). */
+const mobileField = 'max-md:h-[50px] max-md:rounded-[10px] max-md:border-primary/30 max-md:bg-transparent max-md:px-4'
+const mobileSubmit = 'max-md:h-[60px] max-md:rounded-lg max-md:text-[15px]'
+
 function SocialButtons({ onUnavailable }: { onUnavailable: () => void }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 max-md:mt-4">
       <div className="flex items-center gap-3 text-xs text-foreground">
         <span className="h-px flex-1 bg-border" />
         Ou continue com
@@ -57,10 +61,10 @@ function LoginFormView({ search }: { search: AuthSearch }) {
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
       <FormError message={formError} />
       <Field label="E-mail" error={errors.email?.message} hideLabel>
-        <Input type="email" autoComplete="email" placeholder="contato@email.com" {...form.register('email')} />
+        <Input type="email" autoComplete="email" placeholder="contato@email.com" className={mobileField} {...form.register('email')} />
       </Field>
       <Field label="Senha" error={errors.password?.message} hideLabel>
-        <PasswordInput autoComplete="current-password" placeholder="Senha" {...form.register('password')} />
+        <PasswordInput autoComplete="current-password" placeholder="Senha" className={mobileField} {...form.register('password')} />
       </Field>
       <button
         type="button"
@@ -69,7 +73,7 @@ function LoginFormView({ search }: { search: AuthSearch }) {
       >
         Esqueceu a senha?
       </button>
-      <Button type="submit" size="lg" className="mt-4" disabled={login.isPending}>
+      <Button type="submit" size="lg" className={cn('mt-4 max-md:mt-6', mobileSubmit)} disabled={login.isPending}>
         {login.isPending ? 'Entrando…' : 'Entrar'}
       </Button>
     </form>
@@ -100,19 +104,26 @@ function RegisterFormView({ search }: { search: AuthSearch }) {
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
       <FormError message={formError} />
       <Field label="Nome de usuário" error={errors.username?.message} hideLabel>
-        <Input autoComplete="username" placeholder="Nome de usuário" {...form.register('username')} />
+        <Input autoComplete="username" placeholder="Nome de usuário" className={mobileField} {...form.register('username')} />
       </Field>
       <Field label="E-mail" error={errors.email?.message} hideLabel>
-        <Input type="email" autoComplete="email" placeholder="Digite seu e-mail" {...form.register('email')} />
+        <Input type="email" autoComplete="email" placeholder="Digite seu e-mail" className={mobileField} {...form.register('email')} />
       </Field>
       <Field label="Senha" error={errors.password?.message} hint="Mínimo de 8 caracteres, com letras e números." hideLabel>
-        <PasswordInput autoComplete="new-password" placeholder="Senha" {...form.register('password')} />
+        <PasswordInput autoComplete="new-password" placeholder="Senha" className={mobileField} {...form.register('password')} />
       </Field>
       <Field label="Confirmar senha" error={errors.confirmPassword?.message} hideLabel>
-        <PasswordInput autoComplete="new-password" placeholder="Confirmar senha" {...form.register('confirmPassword')} />
+        <PasswordInput autoComplete="new-password" placeholder="Confirmar senha" className={mobileField} {...form.register('confirmPassword')} />
       </Field>
-      <Button type="submit" size="lg" className="mt-4" disabled={register.isPending}>
-        {register.isPending ? 'Criando conta…' : 'Criar conta'}
+      <Button type="submit" size="lg" className={cn('mt-4 max-md:mt-6', mobileSubmit)} disabled={register.isPending}>
+        {register.isPending ? (
+          'Criando conta…'
+        ) : (
+          <>
+            <span className="md:hidden">Criar perfil</span>
+            <span className="max-md:hidden">Criar conta</span>
+          </>
+        )}
       </Button>
     </form>
   )
@@ -140,7 +151,8 @@ function Tabs({ mode, search }: { mode: Mode; search: AuthSearch }) {
 export function AuthScreen({ mode, search }: { mode: Mode; search: AuthSearch }) {
   const navigate = useNavigate()
   const [notice, setNotice] = useState<ReactNode>(null)
-  const title = mode === 'login' ? 'Entrar' : 'Criar conta'
+  // Mobile (Figma): só o título, sem abas nem descrição; no desktop o título fica para leitores de tela.
+  const title = mode === 'login' ? 'Entrar' : 'Criar perfil de colecionador'
   const description =
     mode === 'login'
       ? 'Entre para gerenciar sua carteira, coleção e perfil de criador.'
@@ -156,12 +168,14 @@ export function AuthScreen({ mode, search }: { mode: Mode; search: AuthSearch })
           className="flex h-dvh max-w-none flex-col gap-6 overflow-y-auto rounded-none border-0 bg-background px-7 py-16 md:h-auto md:max-w-[500px] md:rounded-none md:border-b-8 md:border-b-primary md:bg-card md:px-20 md:py-12"
           aria-describedby="auth-description"
         >
-          <p className="text-center text-3xl font-bold tracking-[0.1em] md:hidden" aria-hidden>
+          <p className="mt-[68px] mb-14 text-center text-3xl font-bold tracking-[0.1em] md:hidden" aria-hidden>
             KURIO
           </p>
-          <DialogTitle className="sr-only">{title}</DialogTitle>
-          <Tabs mode={mode} search={search} />
-          <DialogDescription id="auth-description" className="text-center text-xs text-foreground">
+          <DialogTitle className="text-center text-xl font-bold max-md:mb-2 md:sr-only">{title}</DialogTitle>
+          <div className="max-md:hidden">
+            <Tabs mode={mode} search={search} />
+          </div>
+          <DialogDescription id="auth-description" className="text-center text-xs text-foreground max-md:sr-only">
             {description}
           </DialogDescription>
           {search.motivo === 'expirada' && (
@@ -181,14 +195,14 @@ export function AuthScreen({ mode, search }: { mode: Mode; search: AuthSearch })
               {notice}
             </p>
           )}
-          <p className="text-center text-sm text-sand md:hidden">
+          <p className="mt-4 text-center text-sm text-sand md:hidden">
             {mode === 'login' ? (
               <Link to="/cadastro" search={search} replace className="hover:text-amber">
                 Novo na Kurio? Crie uma conta
               </Link>
             ) : (
               <Link to="/entrar" search={search} replace className="hover:text-amber">
-                Já tem conta? Entrar
+                Já tem uma conta? Entre
               </Link>
             )}
           </p>

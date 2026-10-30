@@ -1,10 +1,12 @@
 import { USERS, expect, loginViaUi, mock, open, signIn, test } from './support'
 
 test.describe('Conta e sessão', () => {
-  test('cadastro valida campos, trata conflito e autentica @mobile', async ({ page }) => {
+  test('cadastro valida campos, trata conflito e autentica @mobile', async ({ page, isMobileProject }) => {
     await open(page, '/cadastro')
     const dialog = page.getByRole('dialog')
-    await dialog.getByRole('button', { name: 'Criar conta' }).click()
+    // O Figma mobile chama o botão de "Criar perfil"; o desktop, de "Criar conta".
+    const submit = dialog.getByRole('button', { name: isMobileProject ? 'Criar perfil' : 'Criar conta' })
+    await submit.click()
     await expect(dialog.getByText('Use ao menos 3 caracteres.')).toBeVisible()
     await expect(dialog.getByText('Informe o e-mail.')).toBeVisible()
 
@@ -13,12 +15,12 @@ test.describe('Conta e sessão', () => {
     await dialog.getByPlaceholder('Digite seu e-mail').fill(USERS.ana.email)
     await dialog.getByPlaceholder('Senha', { exact: true }).fill('Segura123')
     await dialog.getByPlaceholder('Confirmar senha').fill('Segura123')
-    await dialog.getByRole('button', { name: 'Criar conta' }).click()
+    await submit.click()
     await expect(dialog.getByText('Este e-mail já está cadastrado.')).toBeVisible()
     await expect(dialog.getByPlaceholder('Digite seu e-mail')).toHaveAttribute('aria-invalid', 'true')
 
     await dialog.getByPlaceholder('Digite seu e-mail').fill('novo@kurio.dev')
-    await dialog.getByRole('button', { name: 'Criar conta' }).click()
+    await submit.click()
     await expect(page).toHaveURL(/\/perfil/)
     await expect(page.getByLabel('Nome de usuário')).toHaveValue('novo.colecionador')
   })
