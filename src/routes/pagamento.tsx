@@ -26,6 +26,7 @@ import { describeChange, isQuoteStale, usePlaceOrder, useQuote } from '@/feature
 import { announce } from '@/lib/announcer'
 import { applyApiErrors } from '@/lib/forms'
 import { formatEth } from '@/lib/money'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/pagamento')({
   beforeLoad: requireAuth,
@@ -128,6 +129,15 @@ function Checkout({ session }: { session: Session }) {
   // Pedido pendente de uma tentativa anterior (refresh/queda): oferece retomada.
   const previousAttempt = attemptStore.get(userId)
 
+  // No mobile o formulário fica oculto (Figma) e só aparece quando há algo a corrigir.
+  const showCollector = Object.keys(errors).length > 0 || !!formError
+  const revealInvalid = () =>
+    requestAnimationFrame(() => {
+      const field = document.querySelector<HTMLElement>('#collector-form [aria-invalid="true"]')
+      field?.focus()
+      field?.scrollIntoView({ block: 'center' })
+    })
+
   const openReview = form.handleSubmit(async () => {
     setFormError(null)
     setOrderError(null)
@@ -141,7 +151,7 @@ function Checkout({ session }: { session: Session }) {
       }
     }
     setReviewOpen(true)
-  })
+  }, revealInvalid)
 
   const confirm = async () => {
     if (!quote.quote || !selectedWallet) return
@@ -165,6 +175,7 @@ function Checkout({ session }: { session: Session }) {
     if (error.code === 'VALIDATION_ERROR') {
       setReviewOpen(false)
       setFormError(applyApiErrors(error, form.setError))
+      revealInvalid()
       return
     }
     if (error.code === 'WALLET_REJECTED') setConnection('disconnected')
@@ -187,9 +198,10 @@ function Checkout({ session }: { session: Session }) {
   }
 
   return (
-    <div className="pb-16">
+    // No mobile a página ocupa a tela inteira para o "Confirmar compra" assentar no rodapé (Figma).
+    <div className="flex min-h-dvh flex-col pb-[calc(env(safe-area-inset-bottom)+24px)] md:block md:min-h-0 md:pb-16">
       <MobileTopBar title="Pagamento com carteira" fallback="/carrinho" />
-      <Container className="md:pt-8">
+      <Container className="flex flex-1 flex-col md:block md:pt-8">
         <Breadcrumbs items={[{ label: 'Início', to: '/' }, { label: 'Mercado', to: '/', hash: 'catalogo' }, { label: 'Pagamento' }]} className="mb-6" />
         <h1 className="sr-only">Pagamento</h1>
 
@@ -222,8 +234,14 @@ function Checkout({ session }: { session: Session }) {
             </Button>
           </div>
         ) : (
-          <div className="grid gap-10 lg:grid-cols-[1fr_405px] lg:gap-8">
-            <form onSubmit={openReview} noValidate className="order-2 flex flex-col gap-5 lg:order-1" aria-labelledby="collector-title">
+          <div className="flex flex-1 flex-col gap-10 md:grid lg:grid-cols-[1fr_405px] lg:gap-8">
+            <form
+              id="collector-form"
+              onSubmit={openReview}
+              noValidate
+              className={cn('order-2 flex flex-col gap-5 lg:order-1', !showCollector && 'max-md:hidden')}
+              aria-labelledby="collector-title"
+            >
               <h2 id="collector-title" className="text-lg font-bold">
                 Perfil do colecionador
               </h2>
@@ -302,8 +320,8 @@ function Checkout({ session }: { session: Session }) {
               </button>
             </form>
 
-            <aside className="order-1 flex flex-col gap-5 lg:order-2" aria-labelledby="order-title">
-              <h2 id="order-title" className="text-lg font-bold">
+            <aside className="order-1 flex flex-col gap-5 max-md:flex-1 lg:order-2" aria-labelledby="order-title">
+              <h2 id="order-title" className="text-lg font-bold max-md:sr-only">
                 Seus NFTs
               </h2>
               {quote.changes.length > 0 || quote.stale ? (
@@ -325,12 +343,13 @@ function Checkout({ session }: { session: Session }) {
               {quote.error && !quote.quote ? (
                 <ErrorState title="Não foi possível calcular a cotação" message={quote.error.message} onRetry={quote.retry} retrying={quote.loading} />
               ) : !quote.quote ? (
-                <>
+                <div className="hidden md:contents">
                   <Skeleton className="h-[160px]" />
                   <SummarySkeleton />
-                </>
+                </div>
               ) : (
-                <>
+                // No mobile o Figma mostra só o total; itens e valores aparecem na revisão antes do envio.
+                <div className="hidden md:contents">
                   <QuoteLines quote={quote.quote} />
                   <p className="text-center text-sm">
                     Tem um código promocional?{' '}
@@ -339,7 +358,7 @@ function Checkout({ session }: { session: Session }) {
                     </Link>
                   </p>
                   <SummaryRows summary={quote.quote.summary} />
-                </>
+                </div>
               )}
               {walletList.length > 0 && (
                 <WalletPicker
@@ -356,14 +375,31 @@ function Checkout({ session }: { session: Session }) {
                   onDisconnect={() => disconnect.mutate()}
                 />
               )}
+              <p className="flex items-baseline justify-end gap-7 text-[15px] font-bold md:hidden">
+                Total:
+                {quote.quote ? (
+                  <span className="text-lg text-amber" data-testid="mobile-total">
+                    {formatEth(quote.quote.summary.totalEth)}
+                  </span>
+                ) : (
+                  <Skeleton className="h-6 w-24 self-center" />
+                )}
+              </p>
               <Button
                 size="lg"
-                className="h-[45px]"
+                className="h-[45px] max-md:mt-auto max-md:h-[60px] max-md:rounded-full max-md:bg-gradient-to-r max-md:from-copper max-md:to-[#b37440] max-md:text-[15px] max-md:hover:from-amber max-md:hover:to-copper"
                 onClick={() => openReview()}
                 disabled={!quote.quote || quote.stale || quote.loading || connect.isPending || placeOrder.isBusy}
                 data-testid="review-order"
               >
-                {connect.isPending ? 'Conectando carteira…' : `Confirmar compra${quote.quote ? ` · ${formatEth(quote.quote.summary.totalEth)}` : ''}`}
+                {connect.isPending ? (
+                  'Conectando carteira…'
+                ) : (
+                  <>
+                    Confirmar compra
+                    {quote.quote && <span className="max-md:hidden"> · {formatEth(quote.quote.summary.totalEth)}</span>}
+                  </>
+                )}
               </Button>
             </aside>
           </div>

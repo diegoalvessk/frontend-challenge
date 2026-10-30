@@ -2,7 +2,8 @@ import type { Page } from '@playwright/test'
 import { USERS, addToCartViaApi, expect, mock, open, signIn, test } from './support'
 
 async function reachReview(page: Page) {
-  await expect(page.getByTestId('quote-lines')).toBeVisible()
+  // O botão só habilita com a cotação carregada (no mobile a lista de itens fica para a revisão).
+  await expect(page.getByTestId('review-order')).toBeEnabled()
   await page.getByTestId('review-order').click()
   await expect(page.getByTestId('review-dialog')).toBeVisible()
 }

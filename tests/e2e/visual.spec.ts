@@ -51,7 +51,7 @@ test.describe('Regressão visual', () => {
       { nftId: 'violet-nomad-314', editionId: '1-50', quantity: 6 },
     ])
     await page.goto('/pagamento')
-    await expect(page.getByTestId('quote-lines')).toBeVisible()
+    await expect(page.getByTestId('review-order')).toBeEnabled()
     await settle(page)
     await expect(page).toHaveScreenshot('pagamento.png', { fullPage: true })
   })

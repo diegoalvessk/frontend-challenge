@@ -221,7 +221,7 @@ Causas residuais:
 - **Revisão do pedido:** foi adicionado um diálogo antes da confirmação (o enunciado exige revisão; não há frame próprio).
 - **Telas sem frame:** pedido pendente, pedido recusado, explorador de transações simulado, lista de favoritos ("Lista de interesse") e estados vazio, erro e "valores mudaram" seguem o mesmo padrão visual.
 - **Galeria do detalhe:** o Figma repete a mesma imagem nas 4 miniaturas. Elas viraram 4 vistas da obra (inteira e recortes de detalhe).
-- **Carteiras no pagamento:** o desktop do Figma mostra o formulário do colecionador e o mobile mostra cartões de carteira. A implementação une os dois: escolha da carteira cadastrada, do provedor e do formulário pré-preenchido em todas as larguras.
+- **Carteiras no pagamento:** o desktop do Figma mostra o formulário do colecionador e o mobile mostra cartões de carteira. No desktop a tela une os dois (formulário, itens, resumo e carteiras). No mobile segue o Figma: carteiras, provedores, total e "Confirmar compra"; o formulário continua pré-preenchido com a carteira escolhida, é enviado e validado no pedido, e só aparece (com foco no campo) quando algum dado precisa de correção. Itens e valores completos aparecem no diálogo de revisão antes do envio.
 - **Perfil:** dados e senha têm botões separados ("Salvar" e "Alterar senha"), para que um erro de senha não bloqueie a edição dos dados.
 - **Contagens das facetas:** vêm da API (dados reais do seed), não dos números estáticos do Figma.
 - **Mobile:** barra superior com voltar e ações fixas no rodapé (detalhe, carrinho), como nos frames. Perfil, carteiras e confirmação foram adaptados por não terem frame mobile.

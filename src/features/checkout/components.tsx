@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { Loader2, PlugZap, Unplug } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { EllipsisVertical, Loader2, PlugZap, Unplug } from 'lucide-react'
 import { NftImage } from '@/components/nft/nft-image'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from '@/components/ui/dialog'
@@ -31,6 +32,10 @@ export function QuoteLines({ quote }: { quote: Quote }) {
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'rejected'
 
+/** Rádio cobre do Figma mobile (anel com ponto quando marcado); no desktop segue o nativo. */
+const radioClass =
+  'size-4 shrink-0 accent-primary max-md:size-[18px] max-md:appearance-none max-md:rounded-full max-md:border-[1.5px] max-md:border-primary/60 max-md:checked:border-primary max-md:checked:bg-[radial-gradient(circle,var(--color-primary)_42%,transparent_46%)]'
+
 export function WalletPicker({
   wallets,
   walletId,
@@ -52,31 +57,59 @@ export function WalletPicker({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-3 text-base font-bold">Carteira conectada</legend>
-        {wallets.map((wallet) => (
-          <label
-            key={wallet.id}
-            className={cn(
-              'flex cursor-pointer items-start gap-4 rounded-xl bg-card p-4 ring-1 ring-transparent transition has-checked:ring-primary has-focus-visible:ring-2 has-focus-visible:ring-ring',
-            )}
-          >
-            <input type="radio" name="wallet" value={wallet.id} checked={walletId === wallet.id} onChange={() => onWalletChange(wallet.id)} className="mt-1 size-4 accent-primary" />
-            <span className="flex flex-col gap-1 text-sm">
-              <span className="text-base font-bold">{wallet.slot === 'primary' ? 'Principal' : 'Reserva'} · {wallet.nickname}</span>
-              <span className="text-sand">{wallet.ensName ? `${wallet.ensName}.eth · ` : ''}{shortAddress(wallet.address)}</span>
-              <span className="text-sand">Rede {NETWORKS.find((n) => n.id === wallet.network)?.label}</span>
-            </span>
-          </label>
-        ))}
+      {/* O link fica no wrapper: dentro do fieldset, top-0 começaria abaixo da legend. */}
+      <div className="relative">
+      <fieldset className="flex flex-col gap-3 max-md:gap-4">
+        <legend className="mb-3 text-base font-bold max-md:text-[15px]">Carteira conectada</legend>
+        {wallets.map((wallet) => {
+          const slot = wallet.slot === 'primary' ? 'Principal' : 'Reserva'
+          return (
+            <div key={wallet.id} className="relative">
+              <label
+                className={cn(
+                  'flex cursor-pointer items-start gap-4 rounded-xl bg-card p-4 ring-1 ring-transparent transition has-checked:ring-primary has-focus-visible:ring-2 has-focus-visible:ring-ring',
+                  'max-md:min-h-[92px] max-md:items-center max-md:pr-12 max-md:has-checked:ring-transparent',
+                )}
+              >
+                <input type="radio" name="wallet" value={wallet.id} checked={walletId === wallet.id} onChange={() => onWalletChange(wallet.id)} className={cn(radioClass, 'mt-1 max-md:mt-0')} />
+                <span className="flex flex-col gap-1 text-sm max-md:text-[13px]">
+                  <span className="text-base font-bold max-md:text-[15px]">
+                    {slot}
+                    <span className="max-md:hidden"> · {wallet.nickname}</span>
+                  </span>
+                  {/* Mobile (Figma): só o ENS, ou o endereço curto quando não houver ENS. */}
+                  <span className="text-sand">
+                    {wallet.ensName ? `${wallet.ensName}.eth` : shortAddress(wallet.address)}
+                    {wallet.ensName && <span className="max-md:hidden"> · {shortAddress(wallet.address)}</span>}
+                  </span>
+                  <span className="text-sand">Rede {NETWORKS.find((n) => n.id === wallet.network)?.label}</span>
+                </span>
+              </label>
+              <Link
+                to="/perfil/carteiras"
+                className="absolute top-1/2 right-2 grid size-10 -translate-y-1/2 place-items-center rounded-full text-sand hover:text-amber md:hidden"
+                aria-label={`Editar carteira ${slot}`}
+              >
+                <EllipsisVertical className="size-5" aria-hidden />
+              </Link>
+            </div>
+          )
+        })}
       </fieldset>
+      <Link to="/perfil/carteiras" className="absolute top-0 right-0 text-sm font-bold text-amber hover:underline md:hidden">
+        Trocar carteira
+      </Link>
+      </div>
 
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-3 text-base font-bold">Carteira e rede</legend>
+      <fieldset className="flex flex-col gap-3 max-md:gap-4">
+        <legend className="mb-3 text-base font-bold max-md:text-[15px]">Carteira e rede</legend>
         {WALLET_PROVIDERS.map((p) => (
-          <label key={p.id} className="flex h-12 cursor-pointer items-center gap-4 rounded-sm border border-border px-4 text-base has-checked:border-primary has-focus-visible:ring-2 has-focus-visible:ring-ring">
-            <input type="radio" name="provider" value={p.id} checked={provider === p.id} onChange={() => onProviderChange(p.id)} className="size-4 accent-primary" />
-            <span className="grid size-7 place-items-center rounded-full border border-primary/50 text-xs font-bold text-amber" aria-hidden>
+          <label
+            key={p.id}
+            className="flex h-12 cursor-pointer items-center gap-4 rounded-sm border border-border px-4 text-base has-checked:border-primary has-focus-visible:ring-2 has-focus-visible:ring-ring max-md:h-16 max-md:gap-3 max-md:rounded-xl max-md:border-0 max-md:bg-card max-md:px-3.5 max-md:text-sm"
+          >
+            <input type="radio" name="provider" value={p.id} checked={provider === p.id} onChange={() => onProviderChange(p.id)} className={cn(radioClass, 'max-md:order-last max-md:ml-auto')} />
+            <span className="grid size-7 place-items-center rounded-full border border-primary/50 text-xs font-bold text-amber max-md:size-10 max-md:border-primary/30 max-md:bg-ink-800" aria-hidden>
               {p.label[0]}
             </span>
             {p.label}
@@ -84,7 +117,7 @@ export function WalletPicker({
         ))}
       </fieldset>
 
-      <div className="flex items-center justify-between gap-3 rounded-sm bg-secondary px-4 py-3 text-sm" role="status" data-testid="wallet-connection">
+      <div className="flex items-center justify-between gap-3 rounded-sm bg-secondary px-4 py-3 text-sm max-md:rounded-xl max-md:bg-card" role="status" data-testid="wallet-connection">
         <span className="flex items-center gap-2">
           {connection === 'connecting' && <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />}
           {connection === 'connected' && <PlugZap className="size-4 text-mint" aria-hidden />}
