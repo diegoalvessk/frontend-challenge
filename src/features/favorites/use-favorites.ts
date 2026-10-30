@@ -44,7 +44,10 @@ export function useToggleFavorite() {
       return { previous, key }
     },
     onError: (error, variables, context) => {
-      if (context) queryClient.setQueryData(context.key, context.previous)
+      if (context?.previous) queryClient.setQueryData(context.key, context.previous)
+      // Clique antes de a lista carregar: não há estado anterior (setQueryData com undefined é ignorado
+      // e o onMutate cancelou a carga). Reseta a consulta para buscar a lista real do servidor.
+      else if (context) void queryClient.resetQueries({ queryKey: context.key })
       const message = `Não foi possível ${variables.favorite ? 'favoritar' : 'remover dos favoritos'} ${variables.name}. ${error.message}`
       toast.error(message)
       announce(message)
