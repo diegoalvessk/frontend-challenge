@@ -213,6 +213,19 @@ Causas residuais:
 - No perfil mobile, o LCP da home é a primeira imagem do catálogo, que depende da API. O caminho crítico é: HTML, chunk dos mocks (~54 KB comprimidos), registro do service worker, chunk da aplicação, requisição ao catálogo (120 ms simulados) e render.
 - Num backend real, o chunk dos mocks não existiria. Ele não foi removido da auditoria porque o enunciado pede as funcionalidades da entrega, sem simplificações exclusivas para a pontuação.
 
+### Resultado abaixo da meta no perfil mobile
+
+Na medição final (Node 24, Windows 11 build 26200), a performance mobile ficou em **86 (início)** e **87 (detalhe)**, abaixo da meta de 90. Desktop ficou em 99 e as demais categorias em 100.
+
+| Mobile | Medição anterior (outra máquina) | Mesmo código anterior, nesta máquina | Versão entregue, nesta máquina |
+| --- | ---: | ---: | ---: |
+| Início | 91 (TBT 189 ms) | 88 (TBT 250 ms) | 86 (TBT 292 ms) |
+| Detalhe | 90 (TBT 215 ms) | 88 (TBT 282 ms) | 87 (TBT 285 ms) |
+
+- **Medição de controle:** o commit anterior aos ajustes visuais finais, que tinha medido 91/90 em outra máquina (Node 26, build 26300), mediu 88/88 nesta. A maior parte da queda vem do ambiente: o Lighthouse aplica 4× de lentidão de CPU sobre a CPU real, e o TBT acompanha a carga da máquina. A diferença restante (1–2 pontos) está dentro da variação entre execuções (84 a 89 no mesmo perfil).
+- **Causa no código:** o LCP é dominado pelo atraso de renderização (cerca de 1,3 s no início), não pela rede (TTFB e download da imagem abaixo de 15 ms). Antes de desenhar o catálogo, o navegador precisa avaliar o chunk do MSW (cerca de 0,7 s de script com CPU limitada), registrar o service worker, avaliar a aplicação e responder à primeira consulta pela API simulada. As tarefas longas que somam o TBT vêm desses dois chunks.
+- **Por que não foi contornado:** as alternativas (pré-renderizar o HTML do catálogo, adiar o MSW ou desligá-lo na auditoria) alterariam o que é medido ou exigiriam mudar a arquitetura de inicialização. O enunciado pede a auditoria com as funcionalidades da entrega, então o resultado foi registrado com as causas, em vez de otimizado só para a pontuação.
+
 ## Decisões de UX e desvios do Figma
 
 - **Login e cadastro:** no desktop são um diálogo modal sobre a home, como no Figma; no mobile, tela cheia.
